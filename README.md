@@ -2,7 +2,7 @@
 >A user-friendly interactive script that builds the latest XMRig straight from source
 
 ## About 
-XMRig-Auto-Build downloads compile dependencies, uses the build scripts directly from XMRig to install updated libraries, then optionally cleans up all the source code and leaves behind a XMRig binary and config.json.
+XMRig-Auto-Build downloads compile dependencies, uses the build scripts directly from XMRig to install updated libraries, and then (optionally) cleans up all the source code and leaves behind a XMRig binary and config.json.
 
 Easy as downloading a pre-compiled binary!
 
