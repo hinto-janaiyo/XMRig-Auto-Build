@@ -15,8 +15,13 @@ Easy as downloading a pre-compiled binary!
 * (any distro that uses the same package manager as those three)
 
 ## Getting Started
-Download the latest release:
+[Download the latest release](https://github.com/hinto-janaiyo/XMRig-Auto-Build/releases/latest)
+and execute it in your terminal
+```
+./XMRig-Auto-Build
+```
 
+OR
 
 To get the script, clone this repo:
 ```
