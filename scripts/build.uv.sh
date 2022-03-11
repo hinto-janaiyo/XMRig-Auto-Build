@@ -1,6 +1,4 @@
-#!/bin/bash -e
-
-UV_VERSION="1.42.0"
+#!/bin/bash
 
 mkdir -p deps
 mkdir -p deps/include
@@ -8,13 +6,13 @@ mkdir -p deps/lib
 
 mkdir -p build && cd build
 
-wget https://github.com/libuv/libuv/archive/v${UV_VERSION}.tar.gz -O v${UV_VERSION}.tar.gz
-tar -xzf v${UV_VERSION}.tar.gz
+git clone -b master https://github.com/libuv/libuv/
 
-cd libuv-${UV_VERSION}
-sh autogen.sh
+cd libuv
+./autogen.sh
 ./configure --disable-shared
 make -j$(nproc || sysctl -n hw.ncpu || sysctl -n hw.logicalcpu)
 cp -fr include ../../deps
 cp .libs/libuv.a ../../deps/lib
 cd ..
+
