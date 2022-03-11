@@ -1,6 +1,4 @@
-#!/bin/bash -e
-
-OPENSSL_VERSION="1.1.1l"
+#!/bin/bash
 
 mkdir -p deps
 mkdir -p deps/include
@@ -8,10 +6,9 @@ mkdir -p deps/lib
 
 mkdir -p build && cd build
 
-wget https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz -O openssl-${OPENSSL_VERSION}.tar.gz
-tar -xzf openssl-${OPENSSL_VERSION}.tar.gz
+git clone -b "OpenSSL_1_1_1-stable" https://github.com/openssl/openssl
 
-cd openssl-${OPENSSL_VERSION}
+cd openssl
 ./config -no-shared -no-asm -no-zlib -no-comp -no-dgram -no-filenames -no-cms
 make -j$(nproc || sysctl -n hw.ncpu || sysctl -n hw.logicalcpu)
 cp -fr include ../../deps
