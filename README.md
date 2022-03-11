@@ -1,5 +1,11 @@
 # XMRig-Auto-Build
 >A user-friendly interactive script that builds the latest XMRig straight from source
+## About
+XMRig-Auto-Build downloads compile dependencies, uses the build scripts directly from XMRig to install updated libraries, then optionally cleans up all the source code and leaves behind a XMRig binary and config.json.
+
+Easy as downloading a pre-compiled binary!
+
+*note: compile dependencies are NOT uninstalled afterwards, hopefully they'll be used for more compiling!*
 
 ## Supported Linux Distributions 🐧
 * **Debian** (apt based: Ubuntu, Linux Mint, Pop!_OS)
@@ -23,7 +29,7 @@ And execute:
 (or just download the `XMRig-Auto-Build` script directly and execute)
 
 ## Bugs
-* Fedora doesn't compile OpenSSL properly, script installs LibreSSL instead
+* Fedora does not compile XMRig's OpenSSL version properly, so LibreSSL is installed instead
 
 ## Donate
 * XMRig's Developer `48edfHu7V9Z84YzzMa6fUueoELZ9ZRXq9VetWzYGzKt52XU5xvqgzYnDK9URnRoJMk1j8nLwEVsaSWJ4fhdUyZijBGUicoD`
