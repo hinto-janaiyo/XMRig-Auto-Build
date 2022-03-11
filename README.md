@@ -35,7 +35,6 @@ And execute:
 ```
 ./XMRig-Auto-Build
 ```
-(or just download the `XMRig-Auto-Build` script directly and execute)
 
 ## Bugs
 * Fedora does not compile XMRig's OpenSSL version properly, so LibreSSL is installed instead
