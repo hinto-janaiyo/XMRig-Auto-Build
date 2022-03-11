@@ -1,17 +1,15 @@
 #!/bin/bash -e
 
-LIBRESSL_VERSION="3.0.2"
-
 mkdir -p deps
 mkdir -p deps/include
 mkdir -p deps/lib
 
 mkdir -p build && cd build
 
-wget https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/libressl-${LIBRESSL_VERSION}.tar.gz -O libressl-${LIBRESSL_VERSION}.tar.gz
-tar -xzf libressl-${LIBRESSL_VERSION}.tar.gz
+git clone -b master https://github.com/libressl-portable/portable
 
-cd libressl-${LIBRESSL_VERSION}
+cd portable
+./autogen.sh
 ./configure --disable-shared
 make -j$(nproc || sysctl -n hw.ncpu || sysctl -n hw.logicalcpu)
 cp -fr include ../../deps
