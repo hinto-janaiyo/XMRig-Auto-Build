@@ -28,7 +28,7 @@ installDirectory="$(pwd)/xmrig"
 #						Initial prompt
 #
 $bgreen; echo "###########################"
-$bgreen; echo "# XMRig auto-build script #"
+$bgreen; echo "# XMRig-Auto-Build script #"
 $bgreen; echo "###########################"
 $bwhite; echo -n "Install into "
 $bblue; echo -n "${installDirectory}? "
@@ -69,7 +69,7 @@ fi
 #
 #						Installing dependencies
 #
-$bblue; echo -n "Install dependencies? (Y/n) " ;$off
+$bblue; echo -n "Install build dependencies? (Y/n) " ;$off
 read yn
 if [[ $yn = "" || $yn = "y" || $yn = "Y" ||$yn = "yes" ||$yn = "Yes" ]]; then
 	case $foundPackageManager in
@@ -83,17 +83,17 @@ if [[ $yn = "" || $yn = "y" || $yn = "Y" ||$yn = "yes" ||$yn = "Yes" ]]; then
 			sudo dnf install -y git make cmake gcc gcc-c++ libstdc++-static automake libtool autoconf
 	esac
 	if [[ $? != 0 ]]; then
-		$bred; echo "Installing dependencies failed, exiting..."
+		$bred; echo "Installing build dependencies failed, exiting..."
 		exit
 	fi
 else
-	$iblue; echo "Skipping dependencies..."
+	$iblue; echo "Skipping build dependencies..."
 fi
 #
 #						Build commands from xmrig.com
 #
 echo
-$bblue; echo -n "Start XMRig auto-build? (Y/n) " ;$off
+$bblue; echo -n "Start XMRig-Auto-Build? (Y/n) " ;$off
 read yn
 if [[ $yn = "" || $yn = "y" || $yn = "Y" ||$yn = "yes" ||$yn = "Yes" ]]; then
 	$iblue; echo "Starting..." ;$off
@@ -118,13 +118,13 @@ Build_Commands()
 
 Build_Commands
 if [[ $? != 0 ]]; then
-	$bred; echo "XMRig auto-build failed, cleaning up files..."
+	$bred; echo "XMRig-Auto-Build failed, cleaning up files..."
 	sudo rm -r "$installDirectory"
 	$ired; echo "Exiting..."
 	exit
 else
 	echo
-	$bgreen; echo "XMRig auto-build done!"
+	$bgreen; echo "XMRig-Auto-Build done!"
 	$bwhite; echo -n "Delete source code? (leaves xmrig and config.json) (Y/n) " ;$off
 
 # moves xmrig/config.json into /xmrig/tmp_autobuild/, deletes everything in /xmrig/, then moves them back and deletes /xmrig/tmp_autobuild/
@@ -151,7 +151,7 @@ fi
 #
 echo
 $bgreen; echo "#####################################"
-$bgreen; echo "# XMRig auto-build script complete! #"
+$bgreen; echo "# XMRig-Auto-Build script complete! #"
 $bgreen; echo "#####################################"
 # shows different locations dependent on if source files are deleted or not
 if [[ $yn = "" || $yn = "y" || $yn = "Y" ||$yn = "yes" ||$yn = "Yes" ]]; then
