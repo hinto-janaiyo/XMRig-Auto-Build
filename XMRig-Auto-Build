@@ -328,3 +328,4 @@ else
 	$iwhite; echo -n "xmrig: " ;$bblue; echo "$AutoBuild/xmrig"
 	$iwhite; echo -n "config.json: " ;$bblue; echo "$AutoBuild/config.json"
 fi
+$off
