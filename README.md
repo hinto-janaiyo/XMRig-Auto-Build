@@ -1,12 +1,12 @@
 # XMRig-Auto-Build
->A user-friendly interactive script that builds the latest XMRig straight from source
+>A user-friendly interactive bash script that builds the latest XMRig straight from source
 
 ## About 
-XMRig-Auto-Build downloads compile dependencies, uses the build scripts directly from XMRig to install updated libraries, and then (optionally) cleans up all the source code and leaves behind a XMRig binary and config.json.
+[XMRig](https://github.com/xmrig/xmrig)-Auto-Build downloads build dependencies, uses the build scripts directly from XMRig to install libraries, and then (optionally) cleans up all the source code and leaves behind a XMRig binary and config.json.
 
 Easy as downloading a pre-compiled binary!
 
-*note: compile dependencies are NOT uninstalled afterwards, hopefully they'll be used for more compiling!*
+*note: build dependencies are NOT uninstalled afterwards, hopefully they'll be used for more building!*
 
 ## Supported Linux Distributions 🐧
 * **Debian** (apt based: Ubuntu, Linux Mint, Pop!_OS)
@@ -23,7 +23,7 @@ and execute it in your terminal
 
 OR
 
-To get the script, clone this repo:
+Clone this repo:
 ```
 git clone https://github.com/hinto-janaiyo/XMRig-Auto-Build
 ```

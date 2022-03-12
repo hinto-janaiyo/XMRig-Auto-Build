@@ -1,0 +1,9 @@
+XMRig-Auto-Build v1.1.0
+
+# MAJOR #
++	added more recent stable lib builds not packaged with xmrig
++	added "latest" option for building lib from git dev branches
+# minor #
+
+2022-03-11
+
