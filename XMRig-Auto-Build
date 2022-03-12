@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+
+################################################################		HEADER CODE		################################################################
+
 #
 #						Colors
 #
@@ -24,6 +27,13 @@ installDirectory="$(pwd)/xmrig"
 AutoBuild="$installDirectory/AutoBuild"
 deps="$AutoBuild/deps"
 libBuild="$AutoBuild/libBuild"
+
+#
+#						Build Dependency Install Functions
+#
+Apt_Build_Dependencies(){ sudo apt install git wget build-essential cmake automake libtool autoconf ;}
+Pacman_Build_Dependencies(){ sudo pacman -S git wget base-devel cmake ;}
+DNF_Build_Dependencies(){ sudo dnf install -y git wget make cmake gcc gcc-c++ libstdc++-static automake libtool autoconf ;}
 
 #
 #						Library Code Build Functions
@@ -204,13 +214,13 @@ read yn
 if [[ $yn = "" || $yn = "y" || $yn = "Y" ||$yn = "yes" ||$yn = "Yes" ]]; then
 	case $foundPackageManager in
 		apt)
-			sudo apt install git build-essential cmake automake libtool autoconf
+			Apt_Build_Dependencies
 			;;
 		pacman)
-			sudo pacman -S git base-devel cmake
+			Pacman_Build_Dependencies
 			;;
 		dnf)
-			sudo dnf install -y git make cmake gcc gcc-c++ libstdc++-static automake libtool autoconf
+			DNF_Build_Dependencies
 	esac
 	if [[ $? != 0 ]]; then
 		$bred; echo "Installing build dependencies failed, exiting..."
