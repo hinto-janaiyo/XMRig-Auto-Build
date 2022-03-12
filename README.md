@@ -2,7 +2,7 @@
 >A user-friendly interactive bash script that builds the latest XMRig straight from source
 
 ## About 
-[XMRig](https://github.com/xmrig/xmrig)-Auto-Build downloads build dependencies, uses the build scripts directly from XMRig to install libraries, and then (optionally) cleans up all the source code and leaves behind a XMRig binary and config.json.
+[XMRig](https://github.com/xmrig/xmrig)-Auto-Build downloads build dependencies, builds the required (up to date!) libraries, builds a portable XMRig binary using those libraries, and then (optionally) cleans up all the source code leaving behind XMRig and the config.json.
 
 Easy as downloading a pre-compiled binary!
 
@@ -35,9 +35,20 @@ And execute:
 ```
 ./XMRig-Auto-Build
 ```
+## Notes
+The libraries required by XMRig are:
+* [Libuv](https://github.com/libuv/libuv)
+* [Hwloc](https://github.com/open-mpi/hwloc)
+* [OpenSSL](https://github.com/openssl/openssl) (or [LibreSSL](https://github.com/libressl-portable/portable))
+
+XMRig-Auto-Build has **[Stable]** and **[Latest]** options:
+* **[Stable]** builds the latest stable releases of the libraries
+* **[Latest]** pulls straight from the development repo
+
+In both cases, the main/current XMRig branch will be used
 
 ## Bugs
-* Fedora does not compile XMRig's OpenSSL version properly, so LibreSSL is installed instead
+* Fedora does not compile OpenSSL properly, so LibreSSL is used instead for DNF-based distros
 
 ## Donate ❤️
 * XMRig's Developer `48edfHu7V9Z84YzzMa6fUueoELZ9ZRXq9VetWzYGzKt52XU5xvqgzYnDK9URnRoJMk1j8nLwEVsaSWJ4fhdUyZijBGUicoD`
