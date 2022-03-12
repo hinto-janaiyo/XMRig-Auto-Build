@@ -6,9 +6,9 @@
 ---
 
 ## About 
-[XMRig](https://github.com/xmrig/xmrig)-Auto-Build downloads build dependencies, builds the required libraries, builds a portable XMRig binary using those libraries, and then (optionally) cleans up all the source code leaving behind XMRig and the config.json.
+[XMRig](https://github.com/xmrig/xmrig)-Auto-Build installs build dependencies, builds the required libraries, builds a portable XMRig binary using those libraries, and then (optionally) cleans up all the source code leaving behind XMRig and the config.json.
 
-Easy as downloading a pre-compiled binary!
+All in a user-friendly interactive bash script, no build knowledge needed!
 
 *note: build dependencies are NOT uninstalled afterwards, hopefully they'll be used for more building!*
 
