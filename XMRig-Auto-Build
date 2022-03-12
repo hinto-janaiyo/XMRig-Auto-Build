@@ -21,6 +21,9 @@ off="printf \033[0m"
 distroName="$(cat /etc/*-release | grep -w "NAME")"
 distroPrettyName="$(cat /etc/*-release | grep -w "PRETTY_NAME" | sed "s/PRETTY_NAME=//")"
 installDirectory="$(pwd)/xmrig"
+Auto-Build="$installDirectory/Auto-Build"
+deps="$Auto-Build/deps"
+libBuild="$Auto-Build/libBuild"
 
 #
 #						Library Code Build Functions
@@ -34,11 +37,11 @@ Build_Libuv()
 {
 	$bgreen; echo "Building Libuv..." ;$off
 	local UV_VERSION="1.44.1"
-	cd "$installDirectory/scripts"
-	mkdir -p deps
-	mkdir -p deps/include
-	mkdir -p deps/lib
-	mkdir -p build && cd build
+	cd "$Auto-Build"
+	mkdir -p $deps
+	mkdir -p $deps/include
+	mkdir -p $deps/lib
+	mkdir -p $build && cd $build
 	if [[ $libVersion = "stable" ]]; then
 		wget https://github.com/libuv/libuv/archive/v${UV_VERSION}.tar.gz -O v${UV_VERSION}.tar.gz
 		tar -xzf v${UV_VERSION}.tar.gz
@@ -50,8 +53,8 @@ Build_Libuv()
 	./autogen.sh
 	./configure --disable-shared
 	make -j$(nproc || sysctl -n hw.ncpu || sysctl -n hw.logicalcpu)
-	cp -fr include ../../deps
-	cp .libs/libuv.a ../../deps/lib
+	cp -fr include $deps
+	cp .libs/libuv.a $deps/lib
 	cd ..
 }
 Build_Hwloc()
