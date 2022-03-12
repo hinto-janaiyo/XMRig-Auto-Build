@@ -298,6 +298,7 @@ if [[ $yn = "" || $yn = "y" || $yn = "Y" ||$yn = "yes" ||$yn = "Yes" ]]; then
 		mv "$installDirectory/build/xmrig" "$installDirectory/tmp_autobuild/"
 		mv "$installDirectory/src/config.json" "$installDirectory/tmp_autobuild/"
 		ls | grep -v "tmp_autobuild" | xargs sudo rm -r > /dev/null
+		sudo rm -r .git .github .gitignore > /dev/null
 		mv "$installDirectory/tmp_autobuild/xmrig" $installDirectory
 		mv "$installDirectory/tmp_autobuild/config.json" $installDirectory
 		rm -r "$installDirectory/tmp_autobuild" > /dev/null
