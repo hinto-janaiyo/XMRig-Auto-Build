@@ -135,13 +135,13 @@ Build_Fail()
 {
 	if [[ $? != 0 ]]; then
 		$bred; echo "XMRig-Auto-Build failed building $1..."
-		$bred; echo "Remove all XMRig-Auto-Build files? (Y/n) "
+		$bred; echo -n "Remove all XMRig-Auto-Build files? (Y/n) " ;$off
 			read yn
 		if [[ $yn = "" || $yn = "y" || $yn = "Y" ||$yn = "yes" ||$yn = "Yes" ]]; then
 			$bred; echo "Removing..."
 			sudo rm -r "$AutoBuild" &&$green&& echo "Removed!"
 		fi
-		$bred; echo "Remove XMRig folder aswell? (Y/n) "
+		$bred; echo -n "Remove XMRig folder aswell? (Y/n) " ;$off
 			read yn
 		if [[ $yn = "" || $yn = "y" || $yn = "Y" ||$yn = "yes" ||$yn = "Yes" ]]; then
 			$bred; echo "Removing..."
