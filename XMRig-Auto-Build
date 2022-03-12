@@ -25,6 +25,11 @@ installDirectory="$(pwd)/xmrig"
 #
 #						Library Code Build Functions
 #
+Pull_Xmrig()
+{
+	$bgreen; echo "Pulling XMRig..."
+	git clone https://github.com/xmrig/xmrig
+}
 Build_Libuv()
 {
 	$bgreen; echo "Building Libuv..."
@@ -248,14 +253,12 @@ while true; do
 			;;
 		esac
 done
+$iblue; echo "[$libVersion] selected..."
 
 #
 #						Build commands
 #
-echo
-$bblue; echo -n "Start "
-$bgreen; echo -n "[$libVersion] "
-$bblue; echo -n "XMRig-Auto-Build? (Y/n) " ;$off
+$bred; echo -n "Start XMRig-Auto-Build? (Y/n) " ;$off
 read yn
 if [[ $yn = "" || $yn = "y" || $yn = "Y" ||$yn = "yes" ||$yn = "Yes" ]]; then
 	$iblue; echo "Starting..." ;$off
@@ -264,6 +267,7 @@ else
 	exit
 fi
 
+Pull_XMRig
 Build_Libuv
 Build_Fail "Libuv"
 Build_Hwloc
