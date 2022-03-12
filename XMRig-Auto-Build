@@ -25,14 +25,14 @@ installDirectory="$(pwd)/xmrig"
 #
 #						Library Code Build Functions
 #
-Pull_Xmrig()
+Pull_XMRig()
 {
-	$bgreen; echo "Pulling XMRig..."
+	$bgreen; echo "Pulling XMRig..." ;$off
 	git clone https://github.com/xmrig/xmrig
 }
 Build_Libuv()
 {
-	$bgreen; echo "Building Libuv..."
+	$bgreen; echo "Building Libuv..." ;$off
 	local UV_VERSION="1.44.1"
 	cd "$installDirectory/scripts"
 	mkdir -p deps
@@ -56,7 +56,7 @@ Build_Libuv()
 }
 Build_Hwloc()
 {
-	$bgreen; echo "Building Hwloc..."
+	$bgreen; echo "Building Hwloc..." ;$off
 	local HWLOC_VERSION="2.7.0"
 	local HWLOC_V="v2.7"
 	cd "$installDirectory/scripts"
@@ -65,7 +65,7 @@ Build_Hwloc()
 	mkdir -p deps/lib
 	mkdir -p build && cd build
 	if [[ $libVersion = "stable" ]]; then
-		wget https://download.open-mpi.org/release/hwloc/v2.5/hwloc-${HWLOC_VERSION}.tar.gz -O hwloc-${HWLOC_VERSION}.tar.gz
+		wget https://download.open-mpi.org/release/hwloc/$HWLOC_V/hwloc-${HWLOC_VERSION}.tar.gz -O hwloc-${HWLOC_VERSION}.tar.gz
 		tar -xzf hwloc-${HWLOC_VERSION}.tar.gz
 		cd hwloc-${HWLOC_VERSION}
 	else
@@ -80,7 +80,7 @@ Build_Hwloc()
 }
 Build_OpenSSL()
 {
-	$bgreen; echo "Building OpenSSL..."
+	$bgreen; echo "Building OpenSSL..." ;$off
 	local OPENSSL_VERSION="1.1.1m"
 	cd "$installDirectory/scripts"
 	mkdir -p deps
@@ -103,7 +103,7 @@ Build_OpenSSL()
 }
 Build_LibreSSL()
 {
-	$bgreen; echo "Building LibreSSL..."
+	$bgreen; echo "Building LibreSSL..." ;$off
 	local LIBRESSL_VERSION="3.4.2"
     cd "$installDirectory/scripts"
 	mkdir -p deps
@@ -127,7 +127,8 @@ Build_LibreSSL()
 }
 Build_XMRig()
 {
-	$bgreen; echo "Building XMRig..."
+	$bgreen; echo "Building XMRig..." ;$off
+	mkdir $installDirectory/build
 	cd "$installDirectory/build"
 	cmake .. -DXMRIG_DEPS=scripts/deps
 	make -j$(nproc)
