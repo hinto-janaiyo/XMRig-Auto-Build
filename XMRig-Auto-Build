@@ -151,7 +151,7 @@ Build_Fail()
 ################################################################		START OF SCRIPT		################################################################
 
 #
-#						Initial prompt
+#						Initial Prompt
 #
 $bgreen; echo "########################"
 $bgreen; echo "#   XMRig-Auto-Build   #"
@@ -169,7 +169,7 @@ $off
 	fi
 
 #
-#						Finding package manager (apt, pacman, dnf)
+#						Finding Package Manager (apt, pacman, dnf)
 #
 Search_For_PackageManager()
 {
@@ -193,7 +193,7 @@ if [[ $found != "yes" ]]; then
 fi
 
 #
-#						Installing dependencies
+#						Installing Dependencies
 #
 $bblue; echo -n "Install build dependencies? (Y/n) " ;$off
 read yn
@@ -217,7 +217,7 @@ else
 fi
 
 #
-#						Pick library build version
+#						Pick Library Build Version
 #
 Lib_Yesno()
 {
@@ -257,7 +257,7 @@ done
 $iblue; echo "[$libVersion] selected..."
 
 #
-#						Build commands
+#						Build Commands
 #
 $bred; echo -n "Start XMRig-Auto-Build? (Y/n) " ;$off
 read yn
