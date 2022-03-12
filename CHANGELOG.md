@@ -1,7 +1,7 @@
 # v1.2
 ## Updates
 * All XMRig-Auto-Build files are now contained within /xmrig/AutoBuild/ (including resulting xmrig binary and config.json)
-* Option to remove XMRig-Auto-Build files only, as well as all of the /xmrig/ folder
+* Option to remove XMRig-Auto-Build files only, as well as the entire /xmrig/ folder
 
 ## Libraries Used for [Stable] Install
 * libuv 1.44.1
