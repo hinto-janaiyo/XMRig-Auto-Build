@@ -147,9 +147,9 @@ Build_Fail()
 #
 #						Initial prompt
 #
-$bgreen; echo "###########################"
-$bgreen; echo "# XMRig-Auto-Build script #"
-$bgreen; echo "###########################"
+$bgreen; echo "########################"
+$bgreen; echo "#   XMRig-Auto-Build   #"
+$bgreen; echo "########################"
 $bwhite; echo -n "Install into "
 $bblue; echo -n "${installDirectory}? "
 $bwhite; echo -n "(Y/n) "
@@ -182,7 +182,7 @@ Search_For_PackageManager "/usr/bin/pacman" "pacman" || exit
 Search_For_PackageManager "/usr/bin/dnf" "dnf" || exit
 if [[ $found != "yes" ]]; then
 	$bred; echo "Package Manager not found/supported!"
-	$ired; echo "Exiting script..."
+	$ired; echo "Exiting..."
 	exit
 fi
 
@@ -304,9 +304,9 @@ fi
 #						End
 #
 echo
-$bgreen; echo "#####################################"
-$bgreen; echo "# XMRig-Auto-Build script complete! #"
-$bgreen; echo "#####################################"
+$bgreen; echo "##################################"
+$bgreen; echo "#   XMRig-Auto-Build complete!   #"
+$bgreen; echo "##################################"
 
 # shows different locations dependent on if source files are deleted or not
 if [[ $yn = "" || $yn = "y" || $yn = "Y" ||$yn = "yes" ||$yn = "Yes" ]]; then
