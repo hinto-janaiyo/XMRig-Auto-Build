@@ -243,7 +243,7 @@ while true; do
 			Lib_Yesno
 			[[ $finalChoice = "yes" ]]&&break
 			;;
-		Latest:latest)
+		Latest|latest)
 			libVersion="latest"
 			Lib_Yesno
 			[[ $finalChoice = "yes" ]]&&break
