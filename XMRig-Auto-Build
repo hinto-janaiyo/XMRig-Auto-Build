@@ -21,9 +21,9 @@ off="printf \033[0m"
 distroName="$(cat /etc/*-release | grep -w "NAME")"
 distroPrettyName="$(cat /etc/*-release | grep -w "PRETTY_NAME" | sed "s/PRETTY_NAME=//")"
 installDirectory="$(pwd)/xmrig"
-Auto-Build="$installDirectory/Auto-Build"
-deps="$Auto-Build/deps"
-libBuild="$Auto-Build/libBuild"
+AutoBuild="$installDirectory/AutoBuild"
+deps="$AutoBuild/deps"
+libBuild="$AutoBuild/libBuild"
 
 #
 #						Library Code Build Functions
@@ -33,15 +33,20 @@ Pull_XMRig()
 	$bgreen; echo "Pulling XMRig..." ;$off
 	git clone https://github.com/xmrig/xmrig
 }
+Build_Folders()
+{
+	$bgreen; echo "Creating Build Folders..." ;$off
+	mkdir -p $AutoBuild
+	mkdir -p $deps
+	mkdir -p $deps/include
+	mkdir -p $deps/lib
+	mkdir -p $libBuild
+}
 Build_Libuv()
 {
 	$bgreen; echo "Building Libuv..." ;$off
 	local UV_VERSION="1.44.1"
-	cd "$Auto-Build"
-	mkdir -p $deps
-	mkdir -p $deps/include
-	mkdir -p $deps/lib
-	mkdir -p $build && cd $build
+	cd "$libBuild"
 	if [[ $libVersion = "stable" ]]; then
 		wget https://github.com/libuv/libuv/archive/v${UV_VERSION}.tar.gz -O v${UV_VERSION}.tar.gz
 		tar -xzf v${UV_VERSION}.tar.gz
@@ -53,20 +58,16 @@ Build_Libuv()
 	./autogen.sh
 	./configure --disable-shared
 	make -j$(nproc || sysctl -n hw.ncpu || sysctl -n hw.logicalcpu)
-	cp -fr include $deps
-	cp .libs/libuv.a $deps/lib
-	cd ..
+	mv -f include/* $deps
+	mv -f .libs/libuv.a $deps/lib
 }
 Build_Hwloc()
 {
 	$bgreen; echo "Building Hwloc..." ;$off
 	local HWLOC_VERSION="2.7.0"
 	local HWLOC_V="v2.7"
-	cd "$installDirectory/scripts"
-	mkdir -p deps
-	mkdir -p deps/include
-	mkdir -p deps/lib
-	mkdir -p build && cd build
+	cd "$AutoBuild"
+	cd $libBuild
 	if [[ $libVersion = "stable" ]]; then
 		wget https://download.open-mpi.org/release/hwloc/$HWLOC_V/hwloc-${HWLOC_VERSION}.tar.gz -O hwloc-${HWLOC_VERSION}.tar.gz
 		tar -xzf hwloc-${HWLOC_VERSION}.tar.gz
@@ -78,18 +79,15 @@ Build_Hwloc()
 	fi
 	./configure --disable-shared --enable-static --disable-io --disable-libudev --disable-libxml2
 	make -j$(nproc || sysctl -n hw.ncpu || sysctl -n hw.logicalcpu)
-	cp -fr include ../../deps
-	cp hwloc/.libs/libhwloc.a ../../deps/lib
+	mv -f include/* $deps
+	mv -f hwloc/.libs/libhwloc.a $deps/lib
 }
 Build_OpenSSL()
 {
 	$bgreen; echo "Building OpenSSL..." ;$off
 	local OPENSSL_VERSION="1.1.1m"
-	cd "$installDirectory/scripts"
-	mkdir -p deps
-	mkdir -p deps/include
-	mkdir -p deps/lib
-	mkdir -p build && cd build
+	cd "$AutoBuild"
+	cd $libBuild
 	if [[ $libVersion = "stable" ]]; then
 		wget https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz -O openssl-${OPENSSL_VERSION}.tar.gz
 		tar -xzf openssl-${OPENSSL_VERSION}.tar.gz
@@ -100,19 +98,16 @@ Build_OpenSSL()
 	fi
 	./config -no-shared -no-asm -no-zlib -no-comp -no-dgram -no-filenames -no-cms
 	make -j$(nproc || sysctl -n hw.ncpu || sysctl -n hw.logicalcpu)
-	cp -fr include ../../deps
-	cp libcrypto.a ../../deps/lib
-	cp libssl.a ../../deps/lib
+	mv -f include/* $deps
+	mv -f libcrypto.a $deps/lib
+	mv -f libssl.a $deps/lib
 }
 Build_LibreSSL()
 {
 	$bgreen; echo "Building LibreSSL..." ;$off
 	local LIBRESSL_VERSION="3.4.2"
-    cd "$installDirectory/scripts"
-	mkdir -p deps
-	mkdir -p deps/include
-	mkdir -p deps/lib
-	mkdir -p build && cd build
+    cd "$AutoBuild"
+	cd $libBuild
 	if [[ $libVersion = "stable" ]]; then
 		wget https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/libressl-${LIBRESSL_VERSION}.tar.gz -O libressl-${LIBRESSL_VERSION}.tar.gz
 		tar -xzf libressl-${LIBRESSL_VERSION}.tar.gz
@@ -124,24 +119,30 @@ Build_LibreSSL()
 	fi
 	./configure --disable-shared
 	make -j$(nproc || sysctl -n hw.ncpu || sysctl -n hw.logicalcpu)
-	cp -fr include ../../deps
-	cp crypto/.libs/libcrypto.a ../../deps/lib
-	cp ssl/.libs/libssl.a ../../deps/lib
+	mv -f include/* $deps
+	mv -f crypto/.libs/libcrypto.a $deps/lib
+	mv -f ssl/.libs/libssl.a $deps/lib
 }
 Build_XMRig()
 {
 	$bgreen; echo "Building XMRig..." ;$off
-	mkdir $installDirectory/build
-	cd "$installDirectory/build"
-	cmake .. -DXMRIG_DEPS=scripts/deps
+	cd "$AutoBuild"
+	cmake .. -DXMRIG_DEPS=$deps
 	make -j$(nproc)
+	cp "$installDirectory/src/config.json" $AutoBuild
 }
 Build_Fail()
 {
 	if [[ $? != 0 ]]; then
 		$bred; echo "XMRig-Auto-Build failed building $1..."
 		$bred; echo "Remove all XMRig-Auto-Build files? (Y/n) "
-		read yn
+			read yn
+		if [[ $yn = "" || $yn = "y" || $yn = "Y" ||$yn = "yes" ||$yn = "Yes" ]]; then
+			$bred; echo "Removing..."
+			sudo rm -r "$AutoBuild" &&$green&& echo "Removed!"
+		fi
+		$bred; echo "Remove XMRig folder aswell? (Y/n) "
+			read yn
 		if [[ $yn = "" || $yn = "y" || $yn = "Y" ||$yn = "yes" ||$yn = "Yes" ]]; then
 			$bred; echo "Removing..."
 			sudo rm -r "$installDirectory" &&$green&& echo "Removed!"
@@ -271,7 +272,7 @@ else
 	exit
 fi
 
-Pull_XMRig
+Pull_XMRig && Build_Folders
 Build_Libuv
 Build_Fail "Libuv"
 Build_Hwloc
@@ -296,15 +297,16 @@ $bwhite; echo -n "Delete source code? (leaves xmrig and config.json) (Y/n) " ;$o
 read yn
 if [[ $yn = "" || $yn = "y" || $yn = "Y" ||$yn = "yes" ||$yn = "Yes" ]]; then
 	$iblue; echo "Cleaning up..." ;$off
+		tmp="$installDirectory/tmp_autobuild"
+		mkdir "$tmp"
+		mv "$AutoBuild/xmrig" "$tmp"
+		mv "$installDirectory/src/config.json" "$tmp"
 		cd $installDirectory
-		mkdir "$installDirectory/tmp_autobuild"
-		mv "$installDirectory/build/xmrig" "$installDirectory/tmp_autobuild/"
-		mv "$installDirectory/src/config.json" "$installDirectory/tmp_autobuild/"
 		ls | grep -v "tmp_autobuild" | xargs sudo rm -r > /dev/null
 		sudo rm -r .git .github .gitignore > /dev/null
-		mv "$installDirectory/tmp_autobuild/xmrig" $installDirectory
-		mv "$installDirectory/tmp_autobuild/config.json" $installDirectory
-		rm -r "$installDirectory/tmp_autobuild" > /dev/null
+		mv "$tmp/xmrig" $installDirectory
+		mv "$tmp/config.json" $installDirectory
+		rm -r "$tmp" > /dev/null
 else
 	$iblue; echo "Skipping cleanup..."
 fi
@@ -323,6 +325,6 @@ if [[ $yn = "" || $yn = "y" || $yn = "Y" ||$yn = "yes" ||$yn = "Yes" ]]; then
 	$bblue; echo $installDirectory
 else
 	$bwhite; echo "Location: "
-	$iwhite; echo -n "xmrig: " ;$bblue; echo "$installDirectory/build/xmrig"
-	$iwhite; echo -n "config.json: " ;$bblue; echo "$installDirectory/src/config.json"
+	$iwhite; echo -n "xmrig: " ;$bblue; echo "$AutoBuild/xmrig"
+	$iwhite; echo -n "config.json: " ;$bblue; echo "$AutoBuild/config.json"
 fi
