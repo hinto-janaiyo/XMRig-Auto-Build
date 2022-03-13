@@ -137,7 +137,7 @@ Build_OpenSSL()
 }
 Build_LibreSSL()
 {
-	Build_Message "Building LibreSSL..."
+	Build_Message "Building LibreSSL"
 	local LIBRESSL_VERSION="3.4.2"
     cd "$AutoBuild"
 	cd $libBuild
@@ -158,7 +158,7 @@ Build_LibreSSL()
 }
 Build_XMRig()
 {
-	Build_Message "Building XMRig..."
+	Build_Message "Building XMRig"
 	cd "$AutoBuild"
 	cmake .. -DXMRIG_DEPS=$deps
 	make -j$(nproc)
