@@ -1,3 +1,17 @@
+# v1.2.1
+## Updates
+* More consistent colors, better visual cues when building libraries
+* Code is more optimized (repeated code > functions)
+
+## Libraries Used for [Stable] Install
+* libuv 1.44.1
+* OpenSSL 1.1.1m (or LibreSSL 3.4.2)
+* hwloc 2.7.0
+
+## Notes
+* XMRig version at time of release: v6.16.4
+
+
 # v1.2
 ## Updates
 * All XMRig-Auto-Build files are now contained within /xmrig/AutoBuild/ (including resulting xmrig binary and config.json)
