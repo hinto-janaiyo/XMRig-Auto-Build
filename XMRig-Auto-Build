@@ -323,8 +323,6 @@ $bgreen; echo "XMRig-Auto-Build done!"
 $bblue; echo -n "Delete source code? (leaves xmrig and config.json) (Y/n) " ;$off
 
 # moves xmrig/config.json into /xmrig/tmp_autobuild/, deletes everything in /xmrig/, then moves them back and deletes /xmrig/tmp_autobuild/
-# rm needs sudo because .git files are write-protected
-
 Yes()
 {
 	$iwhite; echo "Cleaning up..." ;$off
@@ -333,11 +331,11 @@ Yes()
 	mv "$AutoBuild/xmrig" "$tmp"
 	mv "$installDirectory/src/config.json" "$tmp"
 	cd $installDirectory
-	ls | grep -v "tmp_autobuild" | xargs sudo rm -r > /dev/null
-	sudo rm -r .git .github .gitignore > /dev/null
+	ls | grep -v "tmp_autobuild" | xargs rm -rf > /dev/null
+	rm -rf .git .github .gitignore > /dev/null
 	mv "$tmp/xmrig" $installDirectory
 	mv "$tmp/config.json" $installDirectory
-	rm -r "$tmp" > /dev/null
+	rm -rf "$tmp" > /dev/null
 }
 No(){ $iblue; echo "Skipping cleanup..." ;}
 YES_no
