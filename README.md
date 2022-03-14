@@ -11,6 +11,7 @@
 All in a user-friendly interactive bash script, no build knowledge needed!
 
 ![a](https://i.ibb.co/WDvhDX3/a.gif)
+
 *note: build dependencies are NOT uninstalled afterwards, hopefully they'll be used for more building!*
 
 
