@@ -3,7 +3,7 @@
 * New option flags added for skipping interactive prompts and building quickly
 ```
 -S    --stable                Picks stable libraries
--L    --latest                Picks latest development libraries (might be unstable!)
+-L    --latest                Picks latest development libraries
 
 -c    --clean                 Deletes all files except xmrig and config.json at end of build
 -l    --libre                 Uses LibreSSL instead of OpenSSL
