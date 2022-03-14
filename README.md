@@ -12,13 +12,13 @@ All in a user-friendly interactive bash script, no build knowledge needed!
 
 *note: build dependencies are NOT uninstalled afterwards, hopefully they'll be used for more building!*
 
+![a](https://i.ibb.co/WDvhDX3/a.gif)
+
 ## Supported Linux Distributions 🐧
 * **Debian** (apt based: Ubuntu, Linux Mint, Pop!_OS)
 * **Arch** (pacman based: Manjaro)
 * **Fedora** (DNF based)
 * (any distro that uses the same package manager as those three)
-
-![a](https://i.ibb.co/WDvhDX3/a.gif)
 
 ## Getting Started
 [Download the latest release](https://github.com/hinto-janaiyo/XMRig-Auto-Build/releases/latest)
@@ -46,9 +46,9 @@ And execute:
 XMRig-Auto-Build has option flags to skip the interactive process, and skip straight to building:
 
 -S    --stable                Picks stable libraries
--L    --latest                Picks latest libraries (might be unstable!)
+-L    --latest                Picks latest development libraries (might be unstable!)
 
--c    --clean                 Deletes all files but xmrig and config.json
+-c    --clean                 Deletes all files but xmrig and config.json at end of build
 -l    --libre                 Uses LibreSSL instead of OpenSSL
 -d    --deps                  Installs build dependencies
 ```

@@ -3,11 +3,11 @@
 * New option flags added for skipping interactive prompts and building quickly
 ```
 -S    --stable                Picks stable libraries
--L    --latest                Picks latest libraries (might be unstable!)
+-L    --latest                Picks latest development libraries (might be unstable!)
 
--c    --clean                 Deletes all files but xmrig and config.json
+-c    --clean                 Deletes all files but xmrig and config.json at end of build
 -l    --libre                 Uses LibreSSL instead of OpenSSL
--d    --deps                  Installs build dependencies      
+-d    --deps                  Installs build dependencies
 ```
 * sudo no longer needed (unless installing dependencies)
 * More cleanup options if build process fails
