@@ -103,7 +103,7 @@ Build_Dependencies()
 }
 Pull_XMRig()
 {
-	Build_Message "Pulling Xmrig"
+	Build_Message "Pulling XMRig"
 	git clone https://github.com/xmrig/xmrig
 }
 Build_Folders()
