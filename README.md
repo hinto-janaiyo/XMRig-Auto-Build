@@ -10,9 +10,9 @@
 
 All in a user-friendly interactive bash script, no build knowledge needed!
 
+![a](https://i.ibb.co/WDvhDX3/a.gif)
 *note: build dependencies are NOT uninstalled afterwards, hopefully they'll be used for more building!*
 
-![a](https://i.ibb.co/WDvhDX3/a.gif)
 
 ## Supported Linux Distributions 🐧
 * **Debian** (apt based: Ubuntu, Linux Mint, Pop!_OS)
@@ -43,7 +43,7 @@ And execute:
 ```
 ## Option Flags
 ```
-XMRig-Auto-Build has option flags to skip the interactive process, and skip straight to building:
+XMRig-Auto-Build has option flags to skip the interactive process and go straight to building:
 
 -S    --stable                Picks stable libraries
 -L    --latest                Picks latest development libraries (might be unstable!)
@@ -62,7 +62,7 @@ OR
 ```
 The order does not matter!
 ```
-./XMRig-Auto-Build --deps -L --clean
+./XMRig-Auto-Build --deps -L -c --libre
 ```
 ![b](https://i.ibb.co/qJfyC91/b.gif)
 
