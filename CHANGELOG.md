@@ -1,3 +1,26 @@
+# v1.3
+## Updates
+* New option flags added for skipping interactive prompts and building quickly
+```
+-S    --stable                Picks stable libraries
+-L    --latest                Picks latest libraries (might be unstable!)
+
+-c    --clean                 Deletes all files but xmrig and config.json
+-l    --libre                 Uses LibreSSL instead of OpenSSL
+-d    --deps                  Installs build dependencies      
+```
+* sudo no longer needed (unless installing dependencies)
+* More cleanup options if build process fails
+
+## Libraries Used for [Stable] Install
+* libuv 1.44.1
+* OpenSSL 1.1.1m (or LibreSSL 3.4.2)
+* hwloc 2.7.0
+
+## Notes
+* XMRig version at time of release: v6.16.4
+
+
 # v1.2.1
 ## Updates
 * More consistent colors, better visual cues when building libraries

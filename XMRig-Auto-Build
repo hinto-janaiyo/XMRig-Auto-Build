@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
-################################################################		HEADER CODE		################################################################
-
+########################################################        HEADER CODE        ########################################################
 #
 #						Colors
 #
@@ -27,29 +26,11 @@ installDirectory="$(pwd)/xmrig"
 AutoBuild="$installDirectory/AutoBuild"
 deps="$AutoBuild/deps"
 libBuild="$AutoBuild/libBuild"
-
-#
-#						Prompt/Message Functions
-#
-YES_no()
-{
-	read yn
-	if [[ $yn = "" || $yn = "y" || $yn = "Y" ||$yn = "yes" || $yn = "Yes" ]]; then
-		Yes
-	else
-		No
-	fi
-}
-yes_NO()
-{
-	read yn
-    if [[ $yn = "" || $yn = "n" || $yn = "N" ||$yn = "no" || $yn = "No" ]]; then
-		No
-	else
-		Yes
-	fi
-}
-Build_Message(){ $bgreen; echo "############      $1      ############" ;$off;}
+stableColor="\033[0;90m[Stable]"
+latestColor="\033[0;90m[Latest]"
+cleanColor="\033[0;90m[Clean]"
+libreColor="\033[0;90m[Libre]"
+depsColor="\033[0;90m[Dependencies]"
 
 #
 #						Build Dependency Install Functions
@@ -59,8 +40,67 @@ Pacman_Build_Dependencies(){ sudo pacman -S git wget base-devel cmake ;}
 DNF_Build_Dependencies(){ sudo dnf install -y git wget make cmake gcc gcc-c++ libstdc++-static automake libtool autoconf ;}
 
 #
-#						Library Code Build Functions
+#						Prompt/Message Functions
 #
+YES_no()
+{
+	$off
+	read yn
+	if [[ $yn = "" || $yn = "y" || $yn = "Y" ||$yn = "yes" || $yn = "Yes" ]]; then
+		Yes
+	else
+		No
+	fi
+}
+yes_NO()
+{
+	$off
+	read yn
+    if [[ $yn = "" || $yn = "n" || $yn = "N" ||$yn = "no" || $yn = "No" ]]; then
+		No
+	else
+		Yes
+	fi
+}
+Build_Message(){ $bgreen; echo "############      $1      ############" ;$off;}
+End_Message()
+{
+	echo
+	$bgreen; echo "##################################"
+	$bgreen; echo "#   XMRig-Auto-Build complete!   #"
+	$bgreen; echo "##################################"
+	# shows different locations dependent on if source files are deleted or not
+	if [[ $yn = "" || $yn = "y" || $yn = "Y" ||$yn = "yes" ||$yn = "Yes" ]]; then
+	    $bblue; echo -n "XMRig Location: "
+	    $iwhite; echo $installDirectory
+	else
+	    $bblue; echo "Location: "
+	    $bwhite; echo -n "xmrig: " ;$iwhite; echo "$AutoBuild/xmrig"
+	    $bwhite; echo -n "config.json: " ;$iwhite; echo "$AutoBuild/config.json"
+	fi
+	$off
+}
+
+#
+#						Build Functions
+#
+Build_Dependencies()
+{
+	case $foundPackageManager in
+		apt)
+			Apt_Build_Dependencies
+			;;
+		pacman)
+			Pacman_Build_Dependencies
+			;;
+		dnf)
+			DNF_Build_Dependencies
+	esac
+	if [[ $? != 0 ]]; then
+	$bred; echo "Installing build dependencies failed, exiting..."
+	exit
+	fi
+}
 Pull_XMRig()
 {
 	Build_Message "Pulling Xmrig"
@@ -78,8 +118,8 @@ Build_Folders()
 Build_Libuv()
 {
 	Build_Message "Building Libuv"
-	local UV_VERSION="1.44.1"
-	cd "$libBuild"
+	local UV_VERSION="1.44.1"	cd "$libBuild"
+	cd $libBuild
 	if [[ $libVersion = "stable" ]]; then
 		wget https://github.com/libuv/libuv/archive/v${UV_VERSION}.tar.gz -O v${UV_VERSION}.tar.gz
 		tar -xzf v${UV_VERSION}.tar.gz
@@ -99,7 +139,6 @@ Build_Hwloc()
 	Build_Message "Building Hwloc"
 	local HWLOC_VERSION="2.7.0"
 	local HWLOC_V="v2.7"
-	cd "$AutoBuild"
 	cd $libBuild
 	if [[ $libVersion = "stable" ]]; then
 		wget https://download.open-mpi.org/release/hwloc/$HWLOC_V/hwloc-${HWLOC_VERSION}.tar.gz -O hwloc-${HWLOC_VERSION}.tar.gz
@@ -119,7 +158,6 @@ Build_OpenSSL()
 {
 	Build_Message "Building OpenSSL"
 	local OPENSSL_VERSION="1.1.1m"
-	cd "$AutoBuild"
 	cd $libBuild
 	if [[ $libVersion = "stable" ]]; then
 		wget https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz -O openssl-${OPENSSL_VERSION}.tar.gz
@@ -139,7 +177,6 @@ Build_LibreSSL()
 {
 	Build_Message "Building LibreSSL"
 	local LIBRESSL_VERSION="3.4.2"
-    cd "$AutoBuild"
 	cd $libBuild
 	if [[ $libVersion = "stable" ]]; then
 		wget https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/libressl-${LIBRESSL_VERSION}.tar.gz -O libressl-${LIBRESSL_VERSION}.tar.gz
@@ -188,8 +225,153 @@ Build_Fail()
 		exit
 	fi
 }
+#
+#						Package Manager Search Function
+#
+Search_For_PackageManager()
+{
+	local packageManager="$1"
+	if [[ -f $packageManager ]]; then
+		$bgreen; echo -n "$distroPrettyName"
+		$iwhite; echo -n " detected: using "
+		$bgreen; echo "$2"
+		found="yes"
+		foundPackageManager="$2"
+		$off
+	fi
+}
+Which_Package_Manager()
+{
+	Search_For_PackageManager "/usr/bin/apt" "apt" || exit
+	Search_For_PackageManager "/usr/bin/pacman" "pacman" || exit
+	Search_For_PackageManager "/usr/bin/dnf" "dnf" || exit
+	if [[ $found != "yes" ]]; then
+		$bred; echo "Package Manager not found/supported!"
+		$ired; echo "Exiting..."
+		exit
+	fi
+}
 
-################################################################		START OF SCRIPT		################################################################
+#
+#						Option Function
+#
+Clean()
+{
+	$iwhite; echo "Cleaning up..." ;$off
+	tmp="$installDirectory/tmp_autobuild"
+	mkdir "$tmp"
+	mv "$AutoBuild/xmrig" "$tmp"
+	mv "$installDirectory/src/config.json" "$tmp"
+	cd $installDirectory
+	ls | grep -v "tmp_autobuild" | xargs rm -rf > /dev/null
+	rm -rf .git .github .gitignore > /dev/null
+	mv "$tmp/xmrig" $installDirectory
+	mv "$tmp/config.json" $installDirectory
+	rm -rf "$tmp" > /dev/null
+}
+
+########################################################        START OF QUICK BUILD        ########################################################
+# stupid way of skipping
+if [[ $1 != "" ]]; then
+
+#
+#						Options
+#
+for optionChoices in $@; do
+	case $optionChoices in
+		--stable|-S)
+			optionStable="yes"
+			stableColor="\033[1;32m[Stable]"
+			libVersion="stable"
+			;;
+		--latest|-L)
+			optionLatest="yes"
+			latestColor="\033[1;32m[Latest]"
+			libVersion="latest"
+			;;
+		--clean|-c)
+			optionClean="yes"
+			cleanColor="\033[1;32m[Clean]"
+			;;
+		--libre|-l)
+			optionLibre="yes"
+			libreColor="\033[1;32m[Libre]"
+			;;
+		--deps|-d)
+			optionDeps="yes"
+			depsColor="\033[1;32m[Dependencies]"
+			;;
+		*)
+			$ired; echo "XMRig-Auto-Build Error: invalid options!"
+			exit
+	esac
+done
+if [[ $optionStable != "yes" && $optionLatest != "yes" ]]; then
+	$ired; echo "XMRig-Auto-Build Error: pick a library version!"
+	exit
+fi
+if [[ $optionStable = "yes" && $optionLatest = "yes" ]]; then
+    $ired; echo "XMRig-Auto-Build Error: pick only 1 library version!"
+	exit
+fi
+colorAll="$stableColor $latestColor $cleanColor $libreColor $depsColor"
+
+#
+#						Quick Build Prompt
+#
+Quick_Build_Prompt()
+{
+	$bred; echo "                 XMRig-Auto-Build                  "
+	$bred; echo "###################################################"
+	$bred; echo "                Options Detected:                  "
+	$off; echo -e " $colorAll"
+	$bred; echo "               Path to install in:                 "
+	$bwhite; echo "            $installDirectory"
+	$bred; echo "                Start Build? (Y/n)                 "
+	$bred; echo "###################################################"
+	echo -n "                        "
+}
+
+#
+#						Quick Build
+#
+Quick_Build_Prompt
+Yes()
+{
+	if [[ $optionDeps = "yes" ]]; then
+		Search_For_PackageManager
+		Which_Package_Manager
+		Build_Dependencies
+	fi
+	Pull_XMRig && Build_Folders
+	Build_Libuv
+	Build_Fail "Libuv"
+	Build_Hwloc
+	Build_Fail "Hwloc"
+	if [[ $optionLibre = "yes" ]]; then
+		Build_LibreSSL
+		Build_Fail "LibreSSL"
+	else
+		Build_OpenSSL
+		Build_Fail "OpenSSL"
+	fi
+		Build_XMRig
+		Build_Fail "XMRig"
+	if [[ $optionClean = "yes" ]]; then
+	Clean
+	yn="y"
+	fi
+	End_Message
+	exit
+}
+No(){ $ired; echo "Exiting..." ;exit;}
+YES_no
+
+# stupid way of skipping
+fi
+
+########################################################        END OF QUICK BUILD        ########################################################
+########################################################        START OF INTERACTIVE BUILD        ########################################################
 
 #
 #						Initial Prompt
@@ -207,48 +389,14 @@ YES_no
 #
 #						Finding Package Manager (apt, pacman, dnf)
 #
-Search_For_PackageManager()
-{
-	local packageManager="$1"
-	if [[ -f $packageManager ]]; then
-		$bgreen; echo -n "$distroPrettyName"
-		$iwhite; echo -n " detected: using "
-		$bgreen; echo "$2"
-		found="yes"
-		foundPackageManager="$2"
-		$off
-	fi
-}
-Search_For_PackageManager "/usr/bin/apt" "apt" || exit
-Search_For_PackageManager "/usr/bin/pacman" "pacman" || exit
-Search_For_PackageManager "/usr/bin/dnf" "dnf" || exit
-if [[ $found != "yes" ]]; then
-	$bred; echo "Package Manager not found/supported!"
-	$ired; echo "Exiting..."
-	exit
-fi
+Search_For_PackageManager
+Which_Package_Manager
 
 #
 #						Installing Dependencies
 #
 $bblue; echo -n "Install build dependencies? (Y/n) " ;$off
-Yes()
-{
-	case $foundPackageManager in
-		apt)
-			Apt_Build_Dependencies
-			;;
-		pacman)
-			Pacman_Build_Dependencies
-			;;
-		dnf)
-			DNF_Build_Dependencies
-	esac
-	if [[ $? != 0 ]]; then
-		$bred; echo "Installing build dependencies failed, exiting..."
-		exit
-	fi
-}
+Yes(){ Build_Dependencies ;}
 No(){ $iwhite; echo "Skipping build dependencies..." ;}
 YES_no
 
@@ -323,38 +471,13 @@ $bgreen; echo "XMRig-Auto-Build done!"
 $bblue; echo -n "Delete source code? (leaves xmrig and config.json) (Y/n) " ;$off
 
 # moves xmrig/config.json into /xmrig/tmp_autobuild/, deletes everything in /xmrig/, then moves them back and deletes /xmrig/tmp_autobuild/
-Yes()
-{
-	$iwhite; echo "Cleaning up..." ;$off
-	tmp="$installDirectory/tmp_autobuild"
-	mkdir "$tmp"
-	mv "$AutoBuild/xmrig" "$tmp"
-	mv "$installDirectory/src/config.json" "$tmp"
-	cd $installDirectory
-	ls | grep -v "tmp_autobuild" | xargs rm -rf > /dev/null
-	rm -rf .git .github .gitignore > /dev/null
-	mv "$tmp/xmrig" $installDirectory
-	mv "$tmp/config.json" $installDirectory
-	rm -rf "$tmp" > /dev/null
-}
+Yes(){ Clean ;}
 No(){ $iblue; echo "Skipping cleanup..." ;}
 YES_no
 
 #
 #						End
 #
-echo
-$bgreen; echo "##################################"
-$bgreen; echo "#   XMRig-Auto-Build complete!   #"
-$bgreen; echo "##################################"
+End_Message
 
-# shows different locations dependent on if source files are deleted or not
-if [[ $yn = "" || $yn = "y" || $yn = "Y" ||$yn = "yes" ||$yn = "Yes" ]]; then
-	$bblue; echo -n "XMRig Location: "
-	$iwhite; echo $installDirectory
-else
-	$bblue; echo "Location: "
-	$bwhite; echo -n "xmrig: " ;$iwhite; echo "$AutoBuild/xmrig"
-	$bwhite; echo -n "config.json: " ;$iwhite; echo "$AutoBuild/config.json"
-fi
-$off
+########################################################        END OF INTERACTIVE BUILD        ########################################################

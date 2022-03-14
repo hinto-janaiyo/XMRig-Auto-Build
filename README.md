@@ -18,6 +18,8 @@ All in a user-friendly interactive bash script, no build knowledge needed!
 * **Fedora** (DNF based)
 * (any distro that uses the same package manager as those three)
 
+![a](https://i.ibb.co/WDvhDX3/a.gif)
+
 ## Getting Started
 [Download the latest release](https://github.com/hinto-janaiyo/XMRig-Auto-Build/releases/latest)
 and execute it in your terminal
@@ -39,6 +41,31 @@ And execute:
 ```
 ./XMRig-Auto-Build
 ```
+## Option Flags
+```
+XMRig-Auto-Build has option flags to skip the interactive process, and skip straight to building:
+
+-S    --stable                Picks stable libraries
+-L    --latest                Picks latest libraries (might be unstable!)
+
+-c    --clean                 Deletes all files but xmrig and config.json
+-l    --libre                 Uses LibreSSL instead of OpenSSL
+-d    --deps                  Installs build dependencies
+```
+Execute like so:
+```
+./XMRig-Auto-Build -S -c
+```
+OR
+```
+./XMRig-Auto-Build --stable --clean
+```
+The order does not matter!
+```
+./XMRig-Auto-Build --deps -L --clean
+```
+![b](https://i.ibb.co/qJfyC91/b.gif)
+
 ## Notes
 The libraries required by XMRig are:
 * [Libuv](https://github.com/libuv/libuv)
