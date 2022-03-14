@@ -31,6 +31,7 @@ Clone this repo:
 ```
 git clone https://github.com/hinto-janaiyo/XMRig-Auto-Build
 ```
+```
 cd XMRig-Auto-Build
 ```
 ```
