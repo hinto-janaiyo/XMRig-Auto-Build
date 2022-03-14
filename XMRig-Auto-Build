@@ -28,9 +28,16 @@ deps="$AutoBuild/deps"
 libBuild="$AutoBuild/libBuild"
 stableColor="\033[0;90m[Stable]"
 latestColor="\033[0;90m[Latest]"
+configColor="\033[0;90m[Config]"
+pathColor="\033[0;90m[Path]"
 cleanColor="\033[0;90m[Clean]"
-libreColor="\033[0;90m[Libre]"
 depsColor="\033[0;90m[Dependencies]"
+quietColor="\033[0;90m[Quiet]"
+libreColor="\033[0;90m[Libre]"
+forceColor="\033[0;90m[Force]"
+
+colorAll_1="$stableColor $latestColor $configColor $pathColor $cleanColor"
+colorAll_2="$depsColor $quietColor $libreColor $forceColor"
 
 #
 #						Build Dependency Install Functions
@@ -277,7 +284,7 @@ if [[ $1 != "" ]]; then
 #
 #						Options
 #
-for optionChoices in $@; do
+for optionChoices in $@ ;do
 	case $optionChoices in
 		--stable|-S)
 			optionStable="yes"
@@ -288,6 +295,10 @@ for optionChoices in $@; do
 			optionLatest="yes"
 			latestColor="\033[1;32m[Latest]"
 			libVersion="latest"
+			;;
+		--config|-C)
+			optionConfig="yes"
+			configColor="\033[1;32m[Config]"
 			;;
 		--clean|-c)
 			optionClean="yes"
@@ -301,49 +312,89 @@ for optionChoices in $@; do
 			optionDeps="yes"
 			depsColor="\033[1;32m[Dependencies]"
 			;;
+		--path=*)
+			optionPath="yes"
+			pathColor="\033[1;32m[Path]"
+			pathLong="yes"
+			;;
+		-p=*)
+			optionPath="yes"
+			pathColor="\033[1;32m[Path]"
+			pathShort="yes"
+			;;
+		--quiet|-q)
+			optionQuiet="yes"
+			quietColor="\033[1;32m[Quiet]"
+			;;
+		--force|-f)
+			optionForce="yes"
+			forceColor="\033[1;32m[Force]"
+			;;
+#		--|-)
 		*)
 			$ired; echo "XMRig-Auto-Build Error: invalid options!"
 			exit
 	esac
 done
+# library error
 if [[ $optionStable != "yes" && $optionLatest != "yes" ]]; then
 	$ired; echo "XMRig-Auto-Build Error: pick a library version!"
 	exit
 fi
+# multiple library error
 if [[ $optionStable = "yes" && $optionLatest = "yes" ]]; then
     $ired; echo "XMRig-Auto-Build Error: pick only 1 library version!"
 	exit
 fi
-colorAll="$stableColor $latestColor $cleanColor $libreColor $depsColor"
+# (really really really stupid way to) filter input for path
+if [[ $optionPath = "yes" ]]; then
+	for i in $@ ;do
+		if [[ $pathLong = "yes" ]]; then
+			inputPath="$(echo $i | grep -- --path= | sed 's/--path=//g')"
+			if [[ $inputPath = *"/"* ]]; then
+				break
+			fi
+		elif [[ $pathShort = "yes" ]]; then
+			inputPath="$(echo $i | grep -- -p= | sed 's/-p=//g')"
+			if [[ $inputPath = *"/"* ]]; then
+				break
+			fi
+		fi
+	done
+	installDirectory="$inputPath"
+	if [[ ! -d $installDirectory ]]; then
+		$ired; echo "XMRig-Auto-Build Error: install path does not exist!"
+		exit
+	fi
+fi
+
+colorAll_1="$stableColor $latestColor $configColor $pathColor $cleanColor"
+colorAll_2="$depsColor $quietColor $libreColor $forceColor"
 
 #
-#						Quick Build Prompt
+#						Quick Build Functions
 #
 Quick_Build_Prompt()
 {
 	$bred; echo "                 XMRig-Auto-Build                  "
 	$bred; echo "###################################################"
-	$bred; echo "                Options Detected:                  "
-	$off; echo -e " $colorAll"
-	$bred; echo "               Path to install in:                 "
-	$bwhite; echo "            $installDirectory"
-	$bred; echo "                Start Build? (Y/n)                 "
+	$bred; echo "                      Options:"
+	$off; echo -e "    $colorAll_1"
+	$off; echo -e "$colorAll_2"
+	echo
+	$bred; echo -n "Install path: "
+	$bwhite; echo "$installDirectory"
+	echo
+	$bred; echo "                 Start Build? (Y/n)"
 	$bred; echo "###################################################"
 	echo -n "                        "
 }
-
-#
-#						Quick Build
-#
-Quick_Build_Prompt
-Yes()
+Quick_Build_All()
 {
-	if [[ $optionDeps = "yes" ]]; then
-		Search_For_PackageManager
-		Which_Package_Manager
-		Build_Dependencies
-	fi
-	Pull_XMRig && Build_Folders
+	Pull_XMRig
+	Build_Fail "XMRig"
+	Build_Folders
+	Build_Fail "Folders"
 	Build_Libuv
 	Build_Fail "Libuv"
 	Build_Hwloc
@@ -355,14 +406,58 @@ Yes()
 		Build_OpenSSL
 		Build_Fail "OpenSSL"
 	fi
-		Build_XMRig
-		Build_Fail "XMRig"
+	Build_XMRig
+	Build_Fail "XMRig"
 	if [[ $optionClean = "yes" ]]; then
-	Clean
-	yn="y"
+		Clean
+		yn="y"
 	fi
 	End_Message
 	exit
+}
+
+#
+#						Quick Build
+#
+Quick_Build_Prompt
+Yes()
+{
+	# /xmrig/ check
+	if [[ $optionForce != "yes" ]]; then
+		if [[ $optionPath = "yes" && -d "$installDirectory/xmrig" ]]; then
+			$ired; echo -n "$installDirectory/xmrig/ folder already found! Overwrite? (y/N) "
+			Yes()
+			{
+			    $iwhite; echo "Overwriting..."
+			    rm -rf "$installDirectory/xmrig" > /dev/null
+			}
+			No(){ $ired; echo "Exiting..." ;exit;}
+			yes_NO
+		elif [[ $optionPath != "yes" && -d "$installDirectory/xmrig" ]]; then
+			$ired; echo -n "$installDirectory/xmrig/ folder already found! Overwrite? (y/N) "
+			Yes()
+			{
+				$iwhite; echo "Overwriting..."
+				rm -rf "$installDirectory/xmrig" > /dev/null
+			}
+			No(){ $ired; echo "Exiting..." ;exit;}
+			yes_NO
+		fi
+	fi
+
+	# build dependencies
+	if [[ $optionDeps = "yes" ]]; then
+		Search_For_PackageManager
+		Which_Package_Manager
+		Build_Dependencies
+	fi
+
+	# actual build
+	if [[ $optionQuiet = "yes" ]]; then
+		Quick_Build_All 2> /dev/null
+	else
+		Quick_Build_All
+	fi
 }
 No(){ $ired; echo "Exiting..." ;exit;}
 YES_no
@@ -370,7 +465,7 @@ YES_no
 # stupid way of skipping
 fi
 
-########################################################        END OF QUICK BUILD        ########################################################
+########################################################                END OF QUICK BUILD        ########################################################
 ########################################################        START OF INTERACTIVE BUILD        ########################################################
 
 #
@@ -379,12 +474,26 @@ fi
 $bgreen; echo "########################"
 $bgreen; echo "#   XMRig-Auto-Build   #"
 $bgreen; echo "########################"
-$bwhite; echo -n "Install into "
-$bblue; echo -n "${installDirectory}? "
-$bwhite; echo -n "(Y/n) " ;$off
+$bblue; echo -n "Install into "
+$bwhite; echo -n "${installDirectory}? "
+$bblue; echo -n "(Y/n) " ;$off
 Yes(){ $iwhite; echo "Starting..." ;}
 No(){ $ired; echo "Exiting..." ;exit; }
 YES_no
+
+#
+#						Check If /xmrig/ Already Exists
+#
+if [[ -d "$installDirectory" ]]; then
+$ired; echo -n "/xmrig/ folder already found! Overwrite? (y/N) "
+Yes()
+{
+	$iwhite; echo "Overwriting..."
+	rm -rf "$installDirectory" > /dev/null
+}
+No(){ $ired; echo "Exiting..." ;exit;}
+yes_NO
+fi
 
 #
 #						Finding Package Manager (apt, pacman, dnf)
@@ -405,7 +514,7 @@ YES_no
 #
 Lib_Yesno()
 {
-	$bblue; echo -n "Build "
+	$bblue; echo -n "Use "
 	$bgreen; echo -n "[$libVersion]? "
 	$bblue; echo -n "(Y/n) "
 	read yn
