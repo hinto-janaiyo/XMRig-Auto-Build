@@ -31,11 +31,8 @@ Clone this repo:
 ```
 git clone https://github.com/hinto-janaiyo/XMRig-Auto-Build
 ```
-Go into the directory:
-```
 cd XMRig-Auto-Build
 ```
-And execute:
 ```
 ./XMRig-Auto-Build
 ```
