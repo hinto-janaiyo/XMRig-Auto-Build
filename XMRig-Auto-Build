@@ -92,7 +92,7 @@ End_Message()
 	$bgreen; echo "#   XMRig-Auto-Build complete!   #"
 	$bgreen; echo "##################################"
 	# shows different locations dependent on if source files are deleted or not
-	if [[ $yn = "" || $yn = "y" || $yn = "Y" ||$yn = "yes" ||$yn = "Yes" ]]; then
+	if [[ $optionClean = "yes" ]]; then
 	    $bblue; echo -n "XMRig Location: "
 	    $iwhite; echo $installDirectory
 	else
@@ -157,6 +157,9 @@ Overwrite_XMRig()
 Pull_XMRig()
 {
 	Build_Message "$build1"
+	if [[ $optionPath = "yes" ]]; then
+		cd $inputPath
+	fi
 	if [[ $optionDev = "yes" ]]; then
 		git clone -b dev https://github.com/xmrig/xmrig
 	else
@@ -461,13 +464,16 @@ if [[ $optionPath = "yes" ]]; then
 				break
 			fi
 		elif [[ $pathShort = "yes" ]]; then
-			inputPath="$(echo $i | grep -- -p= | sed 's/-p=//g')"
+			inputPath="$(echo $i | grep -- -P= | sed 's/-p=//g')"
 			if [[ $inputPath = *"/"* ]]; then
 				break
 			fi
 		fi
 	done
 	installDirectory="$inputPath/xmrig"
+	AutoBuild="$installDirectory/AutoBuild"
+	deps="$AutoBuild/deps"
+	libBuild="$AutoBuild/libBuild"
 	if [[ ! -d $inputPath ]]; then
 		$ired; echo "XMRig-Auto-Build: install path does not exist!"
 		exit
@@ -650,7 +656,11 @@ $bgreen; echo "XMRig-Auto-Build done!"
 $bblue; echo -n "Delete source code? (leaves xmrig and config.json) (Y/n) " ;$off
 
 # moves xmrig/config.json into /xmrig/tmp_autobuild/, deletes everything in /xmrig/, then moves them back and deletes /xmrig/tmp_autobuild/
-Yes(){ Clean ;}
+Yes()
+{
+	optionClean="yes"
+	Clean
+}
 No(){ $iblue; echo "Skipping cleanup..." ;}
 YES_no
 
