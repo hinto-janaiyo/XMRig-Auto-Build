@@ -35,6 +35,13 @@ depsColor="\033[0;90m[Dependencies]"
 quietColor="\033[0;90m[Quiet]"
 libreColor="\033[0;90m[Libre]"
 forceColor="\033[0;90m[Force]"
+build0="[0/6] Removing old /xmrig/ folder"
+build1="[1/6] Pulling XMRig"
+build2="[2/6] Creating Build Folders"
+build3="[3/6] Building Libuv"
+build4="[4/6] Building Hwloc"
+build5="[5/6] Building OpenSSL"
+build6="[6/6] Building XMRig"
 
 colorAll_1="$stableColor $latestColor $configColor $pathColor $cleanColor"
 colorAll_2="$depsColor $quietColor $libreColor $forceColor"
@@ -69,7 +76,14 @@ yes_NO()
 		Yes
 	fi
 }
-Build_Message(){ $bgreen; echo "############      $1      ############" ;$off;}
+Build_Message()
+{
+	if [[ $optionQuiet = "yes" ]]; then
+		$bgreen; echo "$1" ;$off
+	else
+		$bgreen; echo "############      $1      ############" ;$off
+	fi
+}
 End_Message()
 {
 	echo
@@ -131,14 +145,21 @@ Build_Dependencies()
 	exit
 	fi
 }
+Overwrite_XMRig()
+{
+	if [[ $optionForce = "yes" || $overwrite = "yes" ]]; then
+	    Build_Message "$build0"
+	    rm -rf "$installDirectory" > /dev/null
+	fi
+}
 Pull_XMRig()
 {
-	Build_Message "Pulling XMRig"
+	Build_Message "$build1"
 	git clone https://github.com/xmrig/xmrig
 }
 Build_Folders()
 {
-	Build_Message "Creating Build Folders"
+	Build_Message "$build2"
 	mkdir -p $AutoBuild
 	mkdir -p $deps
 	mkdir -p $deps/include
@@ -147,7 +168,7 @@ Build_Folders()
 }
 Build_Libuv()
 {
-	Build_Message "Building Libuv"
+	Build_Message "$build3"
 	local UV_VERSION="1.44.1"
 	cd $libBuild
 	if [[ $libVersion = "stable" ]]; then
@@ -166,7 +187,7 @@ Build_Libuv()
 }
 Build_Hwloc()
 {
-	Build_Message "Building Hwloc"
+	Build_Message "$build4"
 	local HWLOC_VERSION="2.7.0"
 	local HWLOC_V="v2.7"
 	cd $libBuild
@@ -186,7 +207,7 @@ Build_Hwloc()
 }
 Build_OpenSSL()
 {
-	Build_Message "Building OpenSSL"
+	Build_Message "$build5"
 	local OPENSSL_VERSION="1.1.1m"
 	cd $libBuild
 	if [[ $libVersion = "stable" ]]; then
@@ -205,7 +226,7 @@ Build_OpenSSL()
 }
 Build_LibreSSL()
 {
-	Build_Message "Building LibreSSL"
+	Build_Message "[5/6] Building LibreSSL"
 	local LIBRESSL_VERSION="3.4.2"
 	cd $libBuild
 	if [[ $libVersion = "stable" ]]; then
@@ -225,7 +246,7 @@ Build_LibreSSL()
 }
 Build_XMRig()
 {
-	Build_Message "Building XMRig"
+	Build_Message "$build6"
 	cd "$AutoBuild"
 	cmake .. -DXMRIG_DEPS=$deps
 	make -j$(nproc)
@@ -254,6 +275,48 @@ Build_Fail()
 		$ired; echo "Exiting XMRig-Auto-Build: $1 failed to build..."
 		exit
 	fi
+}
+Build_All()
+{
+	Overwrite_XMRig;Pull_XMRig;Build_Fail "XMRig"
+	Build_Folders;Build_Fail "Folders"
+	Build_Libuv;Build_Fail "Libuv"
+	Build_Hwloc;Build_Fail "Hwloc"
+	if [[ $optionLibre = "yes" ]]; then
+		Build_LibreSSL;Build_Fail "LibreSSL"
+	else
+		Build_OpenSSL;Build_Fail "OpenSSL"
+	fi
+	Build_XMRig;Build_Fail "XMRig"
+	if [[ $optionClean = "yes" ]]; then
+		Clean
+		yn="y"
+	fi
+	End_Message
+	exit
+}
+Build_Quiet()
+{
+	if [[ $optionForce = "yes" ]]; then
+		Build_Message "$build0"
+		Overwrite_XMRig >/dev/null 2>&1
+	fi
+	Build_Message "$build1";Pull_XMRig >/dev/null 2>&1;Build_Fail "XMRig"
+	Build_Message "$build2";Build_Folders >/dev/null 2>&1;Build_Fail "Folders"
+	Build_Message "$build3";Build_Libuv >/dev/null 2>&1;Build_Fail "Libuv"
+	Build_Message "$build4";Build_Hwloc >/dev/null 2>&1;Build_Fail "Hwloc"
+	if [[ $optionLibre = "yes" ]]; then
+		Build_Message "[5/6] Building LibreSSL";Build_LibreSSL >/dev/null 2>&1;Build_Fail "LibreSSL"
+	else
+		Build_Message "$build5";Build_OpenSSL >/dev/null 2>&1;Build_Fail "OpenSSL"
+	fi
+		Build_Message "$build6";Build_XMRig >/dev/null 2>&1;Build_Fail "XMRig"
+	if [[ $optionClean = "yes" ]]; then
+		Clean
+		yn="y"
+	fi
+	End_Message
+	exit
 }
 
 #
@@ -379,7 +442,7 @@ if [[ $optionStable = "yes" && $optionLatest = "yes" ]]; then
     $ired; echo "XMRig-Auto-Build: pick only 1 library version!"
 	exit
 fi
-# (really really really stupid way to) filter input for path
+# really really really stupid way to filter input for path
 if [[ $optionPath = "yes" ]]; then
 	for i in $@ ;do
 		if [[ $pathLong = "yes" ]]; then
@@ -394,8 +457,8 @@ if [[ $optionPath = "yes" ]]; then
 			fi
 		fi
 	done
-	installDirectory="$inputPath"
-	if [[ ! -d $installDirectory ]]; then
+	installDirectory="$inputPath/xmrig"
+	if [[ ! -d $inputPath ]]; then
 		$ired; echo "XMRig-Auto-Build: install path does not exist!"
 		exit
 	fi
@@ -422,51 +485,6 @@ Quick_Build_Prompt()
 	$bred; echo "###################################################"
 	echo -n "                        "
 }
-Quick_Build_All()
-{
-	Pull_XMRig
-	Build_Fail "XMRig"
-	Build_Folders
-	Build_Fail "Folders"
-	Build_Libuv
-	Build_Fail "Libuv"
-	Build_Hwloc
-	Build_Fail "Hwloc"
-	if [[ $optionLibre = "yes" ]]; then
-		Build_LibreSSL
-		Build_Fail "LibreSSL"
-	else
-		Build_OpenSSL
-		Build_Fail "OpenSSL"
-	fi
-	Build_XMRig
-	Build_Fail "XMRig"
-	if [[ $optionClean = "yes" ]]; then
-		Clean
-		yn="y"
-	fi
-	End_Message
-	exit
-}
-Quick_Build_All_Quiet()
-{
-	Build_Message "[1/6] Pulling XMRig";Pull_XMRig &> /dev/null ;Build_Fail "XMRig"
-	Build_Message "[2/6] Creating Build Folders";Build_Folders &> /dev/null ;Build_Fail "Folders"
-	Build_Message "[3/6] Building Libuv";Build_Libuv &> /dev/null ;Build_Fail "Libuv"
-	Build_Message "[4/6] Building Hwloc";Build_Hwloc &> /dev/null ; Build_Fail "Hwloc"
-	if [[ $optionLibre = "yes" ]]; then
-		Build_Message "[5/6] Building LibreSSL";Build_LibreSSL &> /dev/null ;Build_Fail "LibreSSL"
-	else
-		Build_Message "[5/6] Building OpenSSL";Build_OpenSSL &> /dev/null ;Build_Fail "OpenSSL"
-	fi
-	Build_Message "[6/6] Building XMRig";Build_XMRig &> /dev/null ;Build_Fail "XMRig"
-	if [[ $optionClean = "yes" ]]; then
-		Clean
-		yn="y"
-	fi
-	End_Message
-	exit
-}
 
 #
 #						Quick Build
@@ -476,56 +494,25 @@ Yes()
 {
 	# /xmrig/ check
 	if [[ $optionForce != "yes" ]]; then
-		if [[ $optionPath = "yes" && -d "$installDirectory/xmrig" ]]; then
-			$ired; echo -n "Folder: "
-			$bwhite; echo -n "$installDirectory/xmrig"
-			$ired; echo " already exists!"
-			$ired; echo -n "Continue anyway? (y/N) "
-			Yes()
-			{
-			    $iwhite; echo "Continuing..."
-				overwrite="yes"
-			}
-			No(){ $ired; echo "Exiting..." ;exit;}
-			yes_NO
-		elif [[ $optionPath != "yes" && -d "$installDirectory" ]]; then
+		if [[ -d "$installDirectory" ]]; then
 			$ired; echo -n "Folder: "
 			$bwhite; echo -n "$installDirectory"
 			$ired; echo " already exists!"
-			$ired; echo -n "Continue anyway? (y/N) "
-			Yes()
-			{
-				$iwhite; echo "Continuing..."
-				overwrite="yes"
-			}
-			No(){ $ired; echo "Exiting..." ;exit;}
-			yes_NO
+			$ired; echo "Exiting..."
+			exit
 		fi
 	fi
-
 	# build dependencies
 	if [[ $optionDeps = "yes" ]]; then
 		Search_For_PackageManager
 		Which_Package_Manager
 		Build_Dependencies
 	fi
-
 	# actual build
 	if [[ $optionQuiet = "yes" ]]; then
-		Build_Message(){ $bgreen; echo "$1" ;$off;}
-	fi
-	if [[ $overwrite = "yes" || $optionForce = "yes" ]]; then
-		Build_Message "Removing old /xmrig/ folder"
-		if [[ $optionPath = "yes" ]]; then
-		    rm -rf "$installDirectory/xmrig" > /dev/null
-		else
-		    rm -rf "$installDirectory" > /dev/null
-		fi
-	fi
-	if [[ $optionQuiet = "yes" ]]; then
-		Quick_Build_All_Quiet
+		Build_Quiet
 	else
-		Quick_Build_All
+		Build_All
 	fi
 }
 No(){ $ired; echo "Exiting..." ;exit;}
@@ -632,11 +619,7 @@ Yes(){ $iwhite; echo "Starting..." ;$off; }
 No(){ $ired; echo "Exiting..." ;$off;exit; }
 YES_no
 
-if [[ $overwrite = "yes" ]]; then
-	Build_Message "Removing old /xmrig/ folder"
-	rm -rf "$installDirectory" > /dev/null
-fi
-
+Overwrite_XMRig
 Pull_XMRig && Build_Folders
 Build_Libuv
 Build_Fail "Libuv"
