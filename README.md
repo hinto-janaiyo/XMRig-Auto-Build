@@ -27,16 +27,13 @@ and execute it in your terminal
 
 OR
 
-Clone this repo:
+Clone this repo and execute:
 ```
-git clone https://github.com/hinto-janaiyo/XMRig-Auto-Build
-```
-```
-cd XMRig-Auto-Build
-```
-```
+git clone https://github.com/hinto-janaiyo/XMRig-Auto-Build &&
+cd XMRig-Auto-Build &&
 ./XMRig-Auto-Build
 ```
+
 ## Option Flags
 ```
 XMRig-Auto-Build has option flags to skip the interactive process and go straight to building:
@@ -48,13 +45,9 @@ XMRig-Auto-Build has option flags to skip the interactive process and go straigh
 -l    --libre                 Uses LibreSSL instead of OpenSSL
 -d    --deps                  Installs build dependencies
 ```
-Execute like so:
+Usage:
 ```
 ./XMRig-Auto-Build -S -c
-```
-OR
-```
-./XMRig-Auto-Build --stable --clean
 ```
 The order does not matter!
 ```
