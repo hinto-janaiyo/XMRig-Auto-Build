@@ -30,6 +30,7 @@ stableColor="\033[0;90m[Stable]"
 latestColor="\033[0;90m[Latest]"
 configColor="\033[0;90m[Config]"
 pathColor="\033[0;90m[Path]"
+devColor="\033[0;90m[Dev]"
 cleanColor="\033[0;90m[Clean]"
 depsColor="\033[0;90m[Dependencies]"
 quietColor="\033[0;90m[Quiet]"
@@ -110,16 +111,17 @@ Print_Help()
 	$off; echo "./XMRig-Auto-Build <option> <more options>"
 	$off; echo
 cat <<EOM
--S    --stable                Picks stable libraries
--L    --latest                Picks latest development libraries
--C    --config                Allows basic configuration of the config.json
--p    --path                  Sets install path:  --path=YOUR_PATH_HERE  or  -p=YOUR_PATH_HERE
--c    --clean                 Deletes all files except xmrig and config.json at end of build
+-S    --stable                Pick stable libraries
+-L    --latest                Pick latest development libraries
+-C    --config                Allow basic configuration of the config.json
+-P    --path                  Set install path:  --path=YOUR_PATH_HERE  or  -p=YOUR_PATH_HERE
+-D    --dev                   Use the active development branch of XMRig
 
--d    --deps                  Installs build dependencies
--q    --quiet                 Turns off verbose build messages (progress and errors are still shown)
--l    --libre                 Uses LibreSSL instead of OpenSSL
--f    --force                 Force overwrites if /xmrig/ folder already exists
+-c    --clean                 Delete all files except xmrig and config.json at end of build
+-d    --deps                  Install build dependencies
+-q    --quiet                 Turn off verbose build messages (progress and errors are still shown)
+-l    --libre                 Use LibreSSL instead of OpenSSL
+-f    --force                 Force overwrite if /xmrig/ folder already exists
 
 XMRig-Auto-Build, made by: hinto.janaiyo
 EOM
@@ -155,7 +157,11 @@ Overwrite_XMRig()
 Pull_XMRig()
 {
 	Build_Message "$build1"
-	git clone https://github.com/xmrig/xmrig
+	if [[ $optionDev = "yes" ]]; then
+		git clone -b dev https://github.com/xmrig/xmrig
+	else
+		git clone https://github.com/xmrig/xmrig
+	fi
 }
 Build_Folders()
 {
@@ -387,6 +393,20 @@ for optionChoices in $@ ;do
 			optionConfig="yes"
 			configColor="\033[1;32m[Config]"
 			;;
+		--path=*)
+			optionPath="yes"
+			pathColor="\033[1;32m[Path]"
+			pathLong="yes"
+			;;
+		-P=*)
+			optionPath="yes"
+			pathColor="\033[1;32m[Path]"
+			pathShort="yes"
+			;;
+		--dev|-D)
+			optionDev="yes"
+			devColor="\033[1;32m[Dev]"
+			;;
 		--clean|-c)
 			optionClean="yes"
 			cleanColor="\033[1;32m[Clean]"
@@ -398,16 +418,6 @@ for optionChoices in $@ ;do
 		--deps|-d)
 			optionDeps="yes"
 			depsColor="\033[1;32m[Dependencies]"
-			;;
-		--path=*)
-			optionPath="yes"
-			pathColor="\033[1;32m[Path]"
-			pathLong="yes"
-			;;
-		-p=*)
-			optionPath="yes"
-			pathColor="\033[1;32m[Path]"
-			pathShort="yes"
 			;;
 		--quiet|-q)
 			optionQuiet="yes"
@@ -464,8 +474,8 @@ if [[ $optionPath = "yes" ]]; then
 	fi
 fi
 
-colorAll_1="$stableColor $latestColor $configColor $pathColor $cleanColor"
-colorAll_2="$depsColor $quietColor $libreColor $forceColor"
+colorAll_1="$stableColor $latestColor $configColor $pathColor $devColor"
+colorAll_2="$cleanColor $depsColor $quietColor $libreColor $forceColor"
 
 #
 #						Quick Build Functions
@@ -475,8 +485,8 @@ Quick_Build_Prompt()
 	$bred; echo "                 XMRig-Auto-Build                  "
 	$bred; echo "###################################################"
 	$bred; echo "                      Options:"
-	$off; echo -e "    $colorAll_1"
-	$off; echo -e "$colorAll_2"
+	$off; echo -e "     $colorAll_1"
+	$off; echo -e "  $colorAll_2"
 	echo
 	$bred; echo -n "Install path: "
 	$bwhite; echo "$installDirectory"

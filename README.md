@@ -34,16 +34,21 @@ cd XMRig-Auto-Build &&
 ./XMRig-Auto-Build
 ```
 
-## Option Flags
+## Options
 ```
-XMRig-Auto-Build has option flags to skip the interactive process and go straight to building:
+XMRig-Auto-Build has options to skip the interactive process and go straight to building:
 
--S    --stable                Picks stable libraries
--L    --latest                Picks latest development libraries
+-S    --stable                Pick stable libraries
+-L    --latest                Pick latest development libraries
+-C    --config                Allow basic configuration of the config.json
+-P    --path                  Set install path:  --path=YOUR_PATH_HERE  or  -P=YOUR_PATH_HERE
+-D    --dev                   Use the active development branch of XMRig
 
--c    --clean                 Deletes all files except xmrig and config.json at end of build
--l    --libre                 Uses LibreSSL instead of OpenSSL
--d    --deps                  Installs build dependencies
+-c    --clean                 Delete all files except xmrig and config.json at end of build
+-d    --deps                  Install build dependencies
+-q    --quiet                 Turn off verbose build messages (progress and errors are still shown)
+-l    --libre                 Use LibreSSL instead of OpenSSL
+-f    --force                 Force overwrite if /xmrig/ folder already exists
 ```
 Usage:
 ```
@@ -55,7 +60,7 @@ The order does not matter!
 ```
 ![b](https://i.ibb.co/qJfyC91/b.gif)
 
-## Notes
+## Libraries
 The libraries required by XMRig are:
 * [Libuv](https://github.com/libuv/libuv)
 * [Hwloc](https://github.com/open-mpi/hwloc)
@@ -65,7 +70,6 @@ XMRig-Auto-Build has **[Stable]** and **[Latest]** options:
 * **[Stable]** builds the latest stable releases of the libraries
 * **[Latest]** pulls straight from the development repo
 
-In both cases, the main/current XMRig branch will be used
 
 ## Bugs
 * Fedora does not compile OpenSSL properly, so LibreSSL is used instead for DNF-based distros
