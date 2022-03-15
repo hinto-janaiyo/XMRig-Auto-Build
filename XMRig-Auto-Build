@@ -239,15 +239,15 @@ Build_Fail()
 		Yes()
 		{
 			$iwhite; echo "Removing..."
-			sudo rm -r "$AutoBuild" &&$green&& echo "Removed!"
+			rm -rf "$AutoBuild" &&$green&& echo "Removed!"
 		}
 		No(){ $iwhite; echo "Skipping..." ;}
 		YES_no
-		$bred; echo -n "Remove XMRig folder aswell? (Y/n) " ;$off
+		$bred; echo -n "Remove /xmrig/ folder? (Y/n) " ;$off
 		Yes()
 		{
 			$iwhite; echo "Removing..."
-			sudo rm -r "$installDirectory" &&$green&& echo "Removed!"
+			rm -rf "$installDirectory" &&$green&& echo "Removed!"
 		}
 		No(){ $iwhite; echo "Skipping..." ;}
 		YES_no
@@ -448,6 +448,25 @@ Quick_Build_All()
 	End_Message
 	exit
 }
+Quick_Build_All_Quiet()
+{
+	Build_Message "[1/6] Pulling XMRig";Pull_XMRig &> /dev/null ;Build_Fail "XMRig"
+	Build_Message "[2/6] Creating Build Folders";Build_Folders &> /dev/null ;Build_Fail "Folders"
+	Build_Message "[3/6] Building Libuv";Build_Libuv &> /dev/null ;Build_Fail "Libuv"
+	Build_Message "[4/6] Building Hwloc";Build_Hwloc &> /dev/null ; Build_Fail "Hwloc"
+	if [[ $optionLibre = "yes" ]]; then
+		Build_Message "[5/6] Building LibreSSL";Build_LibreSSL &> /dev/null ;Build_Fail "LibreSSL"
+	else
+		Build_Message "[5/6] Building OpenSSL";Build_OpenSSL &> /dev/null ;Build_Fail "OpenSSL"
+	fi
+	Build_Message "[6/6] Building XMRig";Build_XMRig &> /dev/null ;Build_Fail "XMRig"
+	if [[ $optionClean = "yes" ]]; then
+		Clean
+		yn="y"
+	fi
+	End_Message
+	exit
+}
 
 #
 #						Quick Build
@@ -458,20 +477,26 @@ Yes()
 	# /xmrig/ check
 	if [[ $optionForce != "yes" ]]; then
 		if [[ $optionPath = "yes" && -d "$installDirectory/xmrig" ]]; then
-			$ired; echo -n "$installDirectory/xmrig/ folder already found! Overwrite? (y/N) "
+			$ired; echo -n "Folder: "
+			$bwhite; echo -n "$installDirectory/xmrig"
+			$ired; echo " already exists!"
+			$ired; echo -n "Continue anyway? (y/N) "
 			Yes()
 			{
-			    $iwhite; echo "Overwriting..."
-			    rm -rf "$installDirectory/xmrig" > /dev/null
+			    $iwhite; echo "Continuing..."
+				overwrite="yes"
 			}
 			No(){ $ired; echo "Exiting..." ;exit;}
 			yes_NO
-		elif [[ $optionPath != "yes" && -d "$installDirectory/xmrig" ]]; then
-			$ired; echo -n "$installDirectory/xmrig/ folder already found! Overwrite? (y/N) "
+		elif [[ $optionPath != "yes" && -d "$installDirectory" ]]; then
+			$ired; echo -n "Folder: "
+			$bwhite; echo -n "$installDirectory"
+			$ired; echo " already exists!"
+			$ired; echo -n "Continue anyway? (y/N) "
 			Yes()
 			{
-				$iwhite; echo "Overwriting..."
-				rm -rf "$installDirectory/xmrig" > /dev/null
+				$iwhite; echo "Continuing..."
+				overwrite="yes"
 			}
 			No(){ $ired; echo "Exiting..." ;exit;}
 			yes_NO
@@ -487,7 +512,18 @@ Yes()
 
 	# actual build
 	if [[ $optionQuiet = "yes" ]]; then
-		Quick_Build_All 2> /dev/null
+		Build_Message(){ $bgreen; echo "$1" ;$off;}
+	fi
+	if [[ $overwrite = "yes" || $optionForce = "yes" ]]; then
+		Build_Message "Removing old /xmrig/ folder"
+		if [[ $optionPath = "yes" ]]; then
+		    rm -rf "$installDirectory/xmrig" > /dev/null
+		else
+		    rm -rf "$installDirectory" > /dev/null
+		fi
+	fi
+	if [[ $optionQuiet = "yes" ]]; then
+		Quick_Build_All_Quiet
 	else
 		Quick_Build_All
 	fi
@@ -518,14 +554,17 @@ YES_no
 #						Check If /xmrig/ Already Exists
 #
 if [[ -d "$installDirectory" ]]; then
-$ired; echo -n "/xmrig/ folder already found! Overwrite? (y/N) "
-Yes()
-{
-	$iwhite; echo "Overwriting..."
-	rm -rf "$installDirectory" > /dev/null
-}
-No(){ $ired; echo "Exiting..." ;exit;}
-yes_NO
+	$ired; echo -n "Folder: "
+	$bwhite; echo -n "$installDirectory"
+	$ired; echo " already exists!"
+	$ired; echo -n "Continue anyway? (y/N) "
+	Yes()
+	{
+		$iwhite; echo "Continuing!"
+		overwrite="yes"
+	}
+	No(){ $ired; echo "Exiting..." ;exit;}
+	yes_NO
 fi
 
 #
@@ -592,6 +631,11 @@ $off
 Yes(){ $iwhite; echo "Starting..." ;$off; }
 No(){ $ired; echo "Exiting..." ;$off;exit; }
 YES_no
+
+if [[ $overwrite = "yes" ]]; then
+	Build_Message "Removing old /xmrig/ folder"
+	rm -rf "$installDirectory" > /dev/null
+fi
 
 Pull_XMRig && Build_Folders
 Build_Libuv
