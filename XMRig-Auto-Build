@@ -619,10 +619,6 @@ if [[ -d "$installDirectory" ]]; then
 fi
 
 #
-#						Finding Package Manager (apt, pacman, dnf)
-#
-
-#
 #						Installing Dependencies
 #
 $bblue; echo -n "Install build dependencies? "
@@ -653,12 +649,7 @@ while true; do
 	$bgreen; echo -n "[ Stable / latest ] " ;$off
 	read answer
 		case $answer in
-		"")
-			libVersion="stable"
-			Lib_Yesno
-			[[ $libFinalChoice = "yes" ]]&&break
-			;;
-		Stable|stable)
+		Stable|stable|"")
 			libVersion="stable"
 			Lib_Yesno
 			[[ $libFinalChoice = "yes" ]]&&break
@@ -692,12 +683,7 @@ while true; do
 	$bgreen; echo -n "[ Stable / dev ] " ;$off
 	read answer
 		case $answer in
-		"")
-			xmrigVersion="stable"
-			XMRig_Yesno
-			[[ $xmrigFinalChoice = "yes" ]]&&break
-			;;
-		Stable|stable)
+		Stable|stable|"")
 			xmrigVersion="stable"
 			XMRig_Yesno
 			[[ $xmrigFinalChoice = "yes" ]]&&break
@@ -727,11 +713,7 @@ while true; do
 	$bgreen; echo -n "[ Basic / advanced / skip ] " ;$off
 		read answer
 		case $answer in
-		"")
-			configBasic="yes"
-			break
-			;;
-		basic|Basic)
+		basic|Basic|"")
 			configBasic="yes"
 			break
 			;;
