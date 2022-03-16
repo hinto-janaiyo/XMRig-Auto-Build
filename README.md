@@ -11,11 +11,9 @@
 * (optionally) cleans up all the source code
 * (optionally) configures config.json
 
-**No build knowledge needed**
-
 ![a](https://i.ibb.co/Qv23rsy/a.gif)
 
-*note: build dependencies are NOT uninstalled afterwards, hopefully they'll be used for more building*
+*note: build dependencies are NOT uninstalled afterwards
 
 ## Supported Linux Distributions 🐧
 * **Debian** (apt based: Ubuntu, Linux Mint, Pop!_OS)
