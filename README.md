@@ -13,14 +13,14 @@
 
 ![a](https://i.ibb.co/Qv23rsy/a.gif)
 
-*note: build dependencies are NOT uninstalled afterwards
+*note: build dependencies are NOT uninstalled afterwards*
 
 ## Supported Linux Distributions 🐧
 * **Debian** (apt based: Ubuntu, Linux Mint, Pop!_OS)
 * **Arch** (pacman based: Manjaro)
 * **Fedora** (DNF based)
 
-*note: any machine that has bash can run this script
+*note: any machine that has bash can run this script*
 
 ## Getting Started
 [Download the latest release](https://github.com/hinto-janaiyo/XMRig-Auto-Build/releases/latest)
