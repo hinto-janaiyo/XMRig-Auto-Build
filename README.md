@@ -19,7 +19,7 @@
 * **Debian** (apt based: Ubuntu, Linux Mint, Pop!_OS)
 * **Arch** (pacman based: Manjaro)
 * **Fedora** (DNF based)
-* (any distro that uses the same package manager as those three)
+*note: any machine that has bash can run this script
 
 ## Getting Started
 [Download the latest release](https://github.com/hinto-janaiyo/XMRig-Auto-Build/releases/latest)
