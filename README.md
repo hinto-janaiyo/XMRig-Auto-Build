@@ -8,7 +8,7 @@
 
 **No build knowledge needed!**
 
-![a](https://i.ibb.co/WDvhDX3/a.gif)
+![a](https://i.ibb.co/Qv23rsy/a.gif)
 
 *note: build dependencies are NOT uninstalled afterwards, hopefully they'll be used for more building!*
 
@@ -60,7 +60,7 @@ The order does not matter!
 ```
 ./XMRig-Auto-Build --path=/home/hinto.janaiyo -L -c --libre
 ```
-![b](https://i.ibb.co/qJfyC91/b.gif)
+![b](https://i.ibb.co/nzbpDY5/b.gif)
 
 ## Libraries
 The libraries required by XMRig are:
