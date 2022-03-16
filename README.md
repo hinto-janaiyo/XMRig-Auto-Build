@@ -34,9 +34,12 @@ cd XMRig-Auto-Build &&
 ./XMRig-Auto-Build
 ```
 
-## Options
+## Usage
 ```
-XMRig-Auto-Build has options to skip the interactive process and go straight to building:
+Interactive:
+./XMRig-Auto-Build
+Options:
+./XMRig-Auto-Build <option> <more options>
 
 -S    --stable                Use stable libraries
 -L    --latest                Use latest development libraries
@@ -49,17 +52,8 @@ XMRig-Auto-Build has options to skip the interactive process and go straight to 
 -q    --quiet                 Turn off verbose build messages (progress and errors are still shown)
 -l    --libre                 Use LibreSSL instead of OpenSSL
 -f    --force                 Force overwrite if /xmrig/ folder already exists
+```
 
--h    --help                  Print this help message
-```
-Usage:
-```
-./XMRig-Auto-Build -S -c
-```
-The order does not matter!
-```
-./XMRig-Auto-Build --path=/home/hinto.janaiyo -L -c --libre
-```
 ![b](https://i.ibb.co/nzbpDY5/b.gif)
 
 ## Libraries
