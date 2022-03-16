@@ -19,6 +19,7 @@
 * **Debian** (apt based: Ubuntu, Linux Mint, Pop!_OS)
 * **Arch** (pacman based: Manjaro)
 * **Fedora** (DNF based)
+
 *note: any machine that has bash can run this script
 
 ## Getting Started
