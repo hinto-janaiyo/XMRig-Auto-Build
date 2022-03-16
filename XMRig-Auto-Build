@@ -398,7 +398,7 @@ Config()
 Config_Prompt()
 {
 	[[ $interactive = "yes" ]]&& local bred="$iblue"
-	if [[ $optionBasic = "yes" ]]; then
+	if [[ $configBasic = "yes" ]]; then
 		$bred; echo -n "[1/3] Pool URL+Port: " ;$bwhite;read pool
 		$bred; echo -n "[2/3] Wallet: " ;$bwhite;read wallet
 		$bred; echo -n "[3/3] Rig Name: " ;$bwhite;read rig
