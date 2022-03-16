@@ -4,10 +4,10 @@ Interactive:
 Options:
 ./XMRig-Auto-Build <option> <more options>
 
--S    --stable                Pick stable libraries
--L    --latest                Pick latest development libraries
+-S    --stable                Use stable libraries
+-L    --latest                Use latest development libraries
 -C    --config                Allow basic configuration of the config.json
--P    --path                  Set install path:  --path=YOUR_PATH_HERE  or  -p=YOUR_PATH_HERE
+-P    --path                  Set install path:  --path=YOUR_PATH_HERE  or  -P=YOUR_PATH_HERE
 -D    --dev                   Use the active development branch of XMRig
 
 -c    --clean                 Delete all files except xmrig and config.json at end of build

@@ -38,8 +38,8 @@ cd XMRig-Auto-Build &&
 ```
 XMRig-Auto-Build has options to skip the interactive process and go straight to building:
 
--S    --stable                Pick stable libraries
--L    --latest                Pick latest development libraries
+-S    --stable                Use stable libraries
+-L    --latest                Use latest development libraries
 -C    --config                Allow basic configuration of the config.json
 -P    --path                  Set install path:  --path=YOUR_PATH_HERE  or  -P=YOUR_PATH_HERE
 -D    --dev                   Use the active development branch of XMRig
@@ -49,6 +49,8 @@ XMRig-Auto-Build has options to skip the interactive process and go straight to 
 -q    --quiet                 Turn off verbose build messages (progress and errors are still shown)
 -l    --libre                 Use LibreSSL instead of OpenSSL
 -f    --force                 Force overwrite if /xmrig/ folder already exists
+
+-h    --help                  Print this help message
 ```
 Usage:
 ```
@@ -56,7 +58,7 @@ Usage:
 ```
 The order does not matter!
 ```
-./XMRig-Auto-Build --deps -L -c --libre
+./XMRig-Auto-Build --path=/home/hinto.janaiyo -L -c --libre
 ```
 ![b](https://i.ibb.co/qJfyC91/b.gif)
 
@@ -66,13 +68,10 @@ The libraries required by XMRig are:
 * [Hwloc](https://github.com/open-mpi/hwloc)
 * [OpenSSL](https://github.com/openssl/openssl) (or [LibreSSL](https://github.com/libressl-portable/portable))
 
-XMRig-Auto-Build has **[Stable]** and **[Latest]** options:
-* **[Stable]** builds the latest stable releases of the libraries
-* **[Latest]** pulls straight from the development repo
-
-
-## Bugs
-* Fedora does not compile OpenSSL properly, so LibreSSL is used instead for DNF-based distros
+XMRig-Auto-Build has **[Stable]**, **[Latest]** and **[Dev]** options:
+* **[Stable]** builds stable release libraries
+* **[Latest]** builds development branch libraries
+* **[Dev]** uses the development branch for XMRig
 
 ## Donate ❤️
 * XMRig's Developer `48edfHu7V9Z84YzzMa6fUueoELZ9ZRXq9VetWzYGzKt52XU5xvqgzYnDK9URnRoJMk1j8nLwEVsaSWJ4fhdUyZijBGUicoD`

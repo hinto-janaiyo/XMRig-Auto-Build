@@ -1,3 +1,27 @@
+# v1.4
+## Updates
+* 6 more option flags, here is all of them:
+```
+-S    --stable                Use stable libraries
+-L    --latest                Use latest development libraries
+-C    --config                Allow basic configuration of the config.json
+-P    --path                  Set install path:  --path=YOUR_PATH_HERE  or  -P=YOUR_PATH_HERE
+-D    --dev                   Use the active development branch of XMRig
+
+-c    --clean                 Delete all files except xmrig and config.json at end of build
+-d    --deps                  Install build dependencies
+-q    --quiet                 Turn off verbose build messages (progress and errors are still shown)
+-l    --libre                 Use LibreSSL instead of OpenSSL
+-f    --force                 Force overwrite if /xmrig/ folder already exists
+
+-h    --help                  Print this help message
+```
+## Versions Used for [Stable] Install
+* libuv v1.44.1
+* OpenSSL v1.1.1n (or LibreSSL v3.4.2)
+* hwloc v2.7.0
+* XMRig v6.16.4
+
 # v1.3
 ## Updates
 * New option flags added for skipping interactive prompts and building quickly

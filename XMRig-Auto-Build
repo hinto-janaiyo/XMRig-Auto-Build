@@ -71,10 +71,12 @@ yes_NO()
 {
 	$off
 	read yn
-    if [[ $yn = "" || $yn = "n" || $yn = "N" ||$yn = "no" || $yn = "No" ]]; then
+    if [[ $yn = "y" || $yn = "Y" ||$yn = "yes" || $yn = "Yes" ]]; then
+		Yes
+	elif [[ $yn = "" ]]; then
 		No
 	else
-		Yes
+		No
 	fi
 }
 Build_Message()
@@ -93,7 +95,7 @@ End_Message()
 	$bgreen; echo "##################################"
 	# shows different locations dependent on if source files are deleted or not
 	if [[ $optionClean = "yes" ]]; then
-	    $bblue; echo -n "XMRig Location: "
+	    $bblue; echo -n "XMRig folder Location: "
 	    $iwhite; echo $installDirectory
 	else
 	    $bblue; echo "Location: "
@@ -111,10 +113,10 @@ Print_Help()
 	$off; echo "./XMRig-Auto-Build <option> <more options>"
 	$off; echo
 cat <<EOM
--S    --stable                Pick stable libraries
--L    --latest                Pick latest development libraries
+-S    --stable                Use stable libraries
+-L    --latest                Use latest development libraries
 -C    --config                Allow basic configuration of the config.json
--P    --path                  Set install path:  --path=YOUR_PATH_HERE  or  -p=YOUR_PATH_HERE
+-P    --path                  Set install path:  --path=YOUR_PATH_HERE  or  -P=YOUR_PATH_HERE
 -D    --dev                   Use the active development branch of XMRig
 
 -c    --clean                 Delete all files except xmrig and config.json at end of build
@@ -122,6 +124,8 @@ cat <<EOM
 -q    --quiet                 Turn off verbose build messages (progress and errors are still shown)
 -l    --libre                 Use LibreSSL instead of OpenSSL
 -f    --force                 Force overwrite if /xmrig/ folder already exists
+
+-h    --help                  Print this help message
 
 XMRig-Auto-Build, made by: hinto.janaiyo
 EOM
@@ -149,7 +153,7 @@ Build_Dependencies()
 }
 Overwrite_XMRig()
 {
-	if [[ $optionForce = "yes" || $overwrite = "yes" ]]; then
+	if [[ $optionForce = "yes" ]]; then
 	    Build_Message "$build0"
 	    rm -rf "$installDirectory" > /dev/null
 	fi
@@ -217,7 +221,7 @@ Build_Hwloc()
 Build_OpenSSL()
 {
 	Build_Message "$build5"
-	local OPENSSL_VERSION="1.1.1m"
+	local OPENSSL_VERSION="1.1.1n"
 	cd $libBuild
 	if [[ $libVersion = "stable" ]]; then
 		wget https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz -O openssl-${OPENSSL_VERSION}.tar.gz
@@ -297,10 +301,8 @@ Build_All()
 		Build_OpenSSL;Build_Fail "OpenSSL"
 	fi
 	Build_XMRig;Build_Fail "XMRig"
-	if [[ $optionClean = "yes" ]]; then
-		Clean
-		yn="y"
-	fi
+	Clean
+	Config
 	End_Message
 	exit
 }
@@ -319,11 +321,9 @@ Build_Quiet()
 	else
 		Build_Message "$build5";Build_OpenSSL >/dev/null 2>&1;Build_Fail "OpenSSL"
 	fi
-		Build_Message "$build6";Build_XMRig >/dev/null 2>&1;Build_Fail "XMRig"
-	if [[ $optionClean = "yes" ]]; then
-		Clean
-		yn="y"
-	fi
+	Build_Message "$build6";Build_XMRig >/dev/null 2>&1;Build_Fail "XMRig"
+	Clean
+	Config
 	End_Message
 	exit
 }
@@ -343,7 +343,7 @@ Search_For_PackageManager()
 		$off
 	fi
 }
-Which_Package_Manager()
+Which_PackageManager()
 {
 	Search_For_PackageManager "/usr/bin/apt" "apt" || exit
 	Search_For_PackageManager "/usr/bin/pacman" "pacman" || exit
@@ -360,22 +360,68 @@ Which_Package_Manager()
 #
 Clean()
 {
-	$iwhite; echo "Cleaning up..." ;$off
-	tmp="$installDirectory/tmp_autobuild"
-	mkdir "$tmp"
-	mv "$AutoBuild/xmrig" "$tmp"
-	mv "$installDirectory/src/config.json" "$tmp"
-	cd $installDirectory
-	ls | grep -v "tmp_autobuild" | xargs rm -rf > /dev/null
-	rm -rf .git .github .gitignore > /dev/null
-	mv "$tmp/xmrig" $installDirectory
-	mv "$tmp/config.json" $installDirectory
-	rm -rf "$tmp" > /dev/null
+	if [[ $optionClean = "yes" ]]; then
+		$iwhite; echo "Cleaning up..." ;$off
+		tmp="$installDirectory/tmp_autobuild"
+		mkdir "$tmp"
+		mv "$AutoBuild/xmrig" "$tmp"
+		mv "$installDirectory/src/config.json" "$tmp"
+		cd $installDirectory
+		ls | grep -v "tmp_autobuild" | xargs rm -rf > /dev/null
+		rm -rf .git .github .gitignore > /dev/null
+		mv "$tmp/xmrig" $installDirectory
+		mv "$tmp/config.json" $installDirectory
+		rm -rf "$tmp" > /dev/null
+	fi
+}
+Config()
+{
+	if [[ $optionClean = "yes" ]]; then
+		configJson="$installDirectory/config.json"
+	else
+		configJson="$AutoBuild/config.json"
+	fi
+	if [[ $configBasic = "yes" || $configAdvanced = "yes" ]]; then
+		$iwhite; echo "Configuring..." ;$off
+		sed -i "s/donate.v2.xmrig.com:3333/$pool/g" $configJson
+		sed -i "s/YOUR_WALLET_ADDRESS/$wallet/g" $configJson
+		sed -i "s/\"rig-id\": null,/\"rig-id\": \"$rig\",/g" $configJson
+	fi
+	if [[ $configAdvanced = "yes" ]]; then
+		[[ $gbPages = "yes" ]]&& sed -i "s/\"1gb-pages\": false,/\"1gb-pages\": true,/g" $configJson
+		[[ $hugePages != "yes" ]]&& sed -i "s/\"huge-pages\": true,/\"huge-pages\": false,/g" $configJson
+		[[ $hugePagesJit = "yes" ]]&& sed -i "s/\"huge-pages-jit\": false,/\"huge-pages-jit\": true,/g" $configJson
+		[[ $keepAlive = "yes" ]]&& sed -i "s/\"keepalive\": false,/\"keepalive\": true,/g" $configJson
+		[[ $tls = "yes" ]]&& sed -i "s/\"tls\": false,/\"tls\": true,/g" $configJson
+	fi
+}
+Config_Prompt()
+{
+	[[ $interactive = "yes" ]]&& local bred="$iblue"
+	if [[ $optionBasic = "yes" ]]; then
+		$bred; echo -n "[1/3] Pool URL+Port: " ;$bwhite;read pool
+		$bred; echo -n "[2/3] Wallet: " ;$bwhite;read wallet
+		$bred; echo -n "[3/3] Rig Name: " ;$bwhite;read rig
+	elif [[ $configAdvanced = "yes" ]]; then
+		$bred; echo -n "[1/8] Pool URL+Port: " ;$bwhite;read pool
+		$bred; echo -n "[2/8] Wallet: " ;$bwhite;read wallet
+		$bred; echo -n "[3/8] Rig Name: " ;$bwhite;read rig
+		$bred; echo -n "[4/8] 1GB-Pages: (Y/n) " ;$bwhite;Yes(){ gbPages="yes" ;};No(){ :;};YES_no
+		$bred; echo -n "[5/8] Huge-Pages: (Y/n) " ;$bwhite;Yes(){ hugePages="yes" ;};No(){ :;};YES_no
+		$bred; echo -n "[6/8] Huge-Pages-JIT: (Y/n) " ;$bwhite;Yes(){ hugePagesJit="yes" ;};No(){ :;};YES_no
+		$bred; echo -n "[7/8] KeepAlive: (Y/n) " ;$bwhite;Yes(){ keepAlive="yes" ;};No(){ :;};YES_no
+		$bred; echo -n "[8/8] TLS: (Y/n) " ;$bwhite;Yes(){ tls="yes" ;};No(){ :;};YES_no
+	fi
 }
 
 ########################################################        START OF QUICK BUILD        ########################################################
 # stupid way of skipping
-if [[ $1 != "" ]]; then
+if [[ $1 = "" ]]; then
+	interactive="yes"
+elif [[ $1 != "" ]]; then
+	quickBuild="yes"
+fi
+if [[ $quickBuild = "yes" ]]; then
 
 #
 #						Options
@@ -395,6 +441,7 @@ for optionChoices in $@ ;do
 		--config|-C)
 			optionConfig="yes"
 			configColor="\033[1;32m[Config]"
+			configAdvanced="yes"
 			;;
 		--path=*)
 			optionPath="yes"
@@ -464,7 +511,7 @@ if [[ $optionPath = "yes" ]]; then
 				break
 			fi
 		elif [[ $pathShort = "yes" ]]; then
-			inputPath="$(echo $i | grep -- -P= | sed 's/-p=//g')"
+			inputPath="$(echo $i | grep -- -P= | sed 's/-P=//g')"
 			if [[ $inputPath = *"/"* ]]; then
 				break
 			fi
@@ -496,10 +543,11 @@ Quick_Build_Prompt()
 	echo
 	$bred; echo -n "Install path: "
 	$bwhite; echo "$installDirectory"
+	[[ $optionConfig = "yes" ]]&& Config_Prompt
 	echo
-	$bred; echo "                 Start Build? (Y/n)"
+	$bred; echo "                    Start? (Y/n)"
 	$bred; echo "###################################################"
-	echo -n "                        "
+	echo -n "                          "
 }
 
 #
@@ -521,7 +569,7 @@ Yes()
 	# build dependencies
 	if [[ $optionDeps = "yes" ]]; then
 		Search_For_PackageManager
-		Which_Package_Manager
+		Which_PackageManager
 		Build_Dependencies
 	fi
 	# actual build
@@ -548,7 +596,7 @@ $bgreen; echo "#   XMRig-Auto-Build   #"
 $bgreen; echo "########################"
 $bblue; echo -n "Install into "
 $bwhite; echo -n "${installDirectory}? "
-$bblue; echo -n "(Y/n) " ;$off
+$bgreen; echo -n "(Y/n) " ;$off
 Yes(){ $iwhite; echo "Starting..." ;}
 No(){ $ired; echo "Exiting..." ;exit; }
 YES_no
@@ -563,8 +611,8 @@ if [[ -d "$installDirectory" ]]; then
 	$ired; echo -n "Continue anyway? (y/N) "
 	Yes()
 	{
-		$iwhite; echo "Continuing!"
-		overwrite="yes"
+		$iwhite; echo "Continuing..."
+		optionForce="yes"
 	}
 	No(){ $ired; echo "Exiting..." ;exit;}
 	yes_NO
@@ -573,59 +621,153 @@ fi
 #
 #						Finding Package Manager (apt, pacman, dnf)
 #
-Search_For_PackageManager
-Which_Package_Manager
 
 #
 #						Installing Dependencies
 #
-$bblue; echo -n "Install build dependencies? (Y/n) " ;$off
-Yes(){ Build_Dependencies ;}
+$bblue; echo -n "Install build dependencies? "
+$bgreen; echo -n "(Y/n) " ;$off
+Yes()
+{
+	Search_For_PackageManager
+	Which_PackageManager
+	Build_Dependencies
+}
 No(){ $iwhite; echo "Skipping build dependencies..." ;}
 YES_no
 
 #
-#						Pick Library Build Version
+#						Pick Library Version
 #
 Lib_Yesno()
 {
-	$bblue; echo -n "Use "
-	$bgreen; echo -n "[$libVersion]? "
-	$bblue; echo -n "(Y/n) "
+	$bblue; echo -n "Use [$libVersion]? "
+	$bgreen; echo -n "(Y/n) " ;$off
 	read yn
 	if [[ $yn = "" || $yn = "y" || $yn = "Y" ||$yn = "yes" ||$yn = "Yes" ]]; then
-		finalChoice="yes"
+		libFinalChoice="yes"
 	fi
 }
 while true; do
 	$bblue; echo -n "Which library versions to build? "
 	$bgreen; echo -n "[ Stable / latest ] " ;$off
 	read answer
-	case $answer in
+		case $answer in
 		"")
 			libVersion="stable"
 			Lib_Yesno
-			[[ $finalChoice = "yes" ]]&&break
+			[[ $libFinalChoice = "yes" ]]&&break
 			;;
 		Stable|stable)
 			libVersion="stable"
 			Lib_Yesno
-			[[ $finalChoice = "yes" ]]&&break
+			[[ $libFinalChoice = "yes" ]]&&break
 			;;
 		Latest|latest)
 			libVersion="latest"
 			Lib_Yesno
-			[[ $finalChoice = "yes" ]]&&break
+			[[ $libFinalChoice = "yes" ]]&&break
 			;;
 		*)
 			$ired; echo "Error, please type valid version"
 			;;
-		esac
+	esac
 done
 $iwhite; echo "[$libVersion] selected..."
 
 #
-#						Build Commands
+#						Pick XMRig Version
+#
+XMRig_Yesno()
+{
+	$bblue; echo -n "Use [$xmrigVersion]? "
+	$bgreen; echo -n "(Y/n) " ;$off
+	read yn
+	if [[ $yn = "" || $yn = "y" || $yn = "Y" ||$yn = "yes" ||$yn = "Yes" ]]; then
+		xmrigFinalChoice="yes"
+	fi
+}
+while true; do
+	$bblue; echo -n "Which XMRig version to build? "
+	$bgreen; echo -n "[ Stable / dev ] " ;$off
+	read answer
+		case $answer in
+		"")
+			xmrigVersion="stable"
+			XMRig_Yesno
+			[[ $xmrigFinalChoice = "yes" ]]&&break
+			;;
+		Stable|stable)
+			xmrigVersion="stable"
+			XMRig_Yesno
+			[[ $xmrigFinalChoice = "yes" ]]&&break
+			;;
+		Dev|dev)
+			xmrigVersion="dev"
+			optionDev="yes"
+			XMRig_Yesno
+			[[ $xmrigFinalChoice = "yes" ]]&&break
+			;;
+		*)
+			$ired; echo "Error, please type valid version"
+			;;
+	esac
+done
+$iwhite; echo "[$xmrigVersion] selected..."
+
+#
+#						Pick XMRig Version
+#
+
+#
+#						Configure config.json
+#
+while true; do
+	$bblue; echo -n "Configure config.json: "
+	$bgreen; echo -n "[ Basic / advanced / skip ] " ;$off
+		read answer
+		case $answer in
+		"")
+			configBasic="yes"
+			break
+			;;
+		basic|Basic)
+			configBasic="yes"
+			break
+			;;
+		advanced|Advanced)
+			configAdvanced="yes"
+			break
+			;;
+		skip|Skip)
+			$iwhite; echo "Skipping config..."
+			break
+			;;
+		*)
+			$ired; echo "Error, please type valid answer"
+	esac
+done
+if [[ $configBasic = "yes" ]]; then
+	$bgreen; echo "[Basic]:"
+elif [[ $configAdvanced = "yes" ]]; then
+	$bgreen; echo "[Advanced]:"
+fi
+Config_Prompt
+
+#
+#						Cleanup Prompt
+#
+$bblue; echo -n "Delete source code after build? "
+$bgreen; echo -n "(Y/n) " ;$off
+Yes()
+{
+	$iwhite; echo "Will delete source code after build..."
+	optionClean="yes" ;}
+No(){ $iwhite; echo "Skipping cleanup..." ;}
+YES_no
+
+#
+#						Build
 #
 $bred; echo "#####################################"
 $bred; echo "#   Start XMRig-Auto-Build? (Y/n)   #"
@@ -633,40 +775,9 @@ $bred; echo "#####################################"
 $off
 Yes(){ $iwhite; echo "Starting..." ;$off; }
 No(){ $ired; echo "Exiting..." ;$off;exit; }
+echo -n "                  "
 YES_no
 
-Overwrite_XMRig
-Pull_XMRig && Build_Folders
-Build_Libuv
-Build_Fail "Libuv"
-Build_Hwloc
-Build_Fail "Hwloc"
-if [[ $foundPackageManager = "dnf" ]]; then
-	Build_LibreSSL
-	Build_Fail "LibreSSL"
-else
-	Build_OpenSSL
-	Build_Fail "OpenSSL"
-fi
-Build_XMRig
-Build_Fail "XMRig"
-
-echo
-$bgreen; echo "XMRig-Auto-Build done!"
-$bblue; echo -n "Delete source code? (leaves xmrig and config.json) (Y/n) " ;$off
-
-# moves xmrig/config.json into /xmrig/tmp_autobuild/, deletes everything in /xmrig/, then moves them back and deletes /xmrig/tmp_autobuild/
-Yes()
-{
-	optionClean="yes"
-	Clean
-}
-No(){ $iblue; echo "Skipping cleanup..." ;}
-YES_no
-
-#
-#						End
-#
-End_Message
+Build_All
 
 ########################################################        END OF INTERACTIVE BUILD        ########################################################
