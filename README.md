@@ -10,7 +10,6 @@
 * uses those libraries to build a portable XMRig binary
 * (optionally) cleans up all the source code
 * (optionally) configures config.json
-* builds XMRig!
 
 **No build knowledge needed!**
 
