@@ -1,6 +1,6 @@
 # v1.4
 ## Updates
-* 6 more option flags, here is all of them:
+* 6 more option flags, here are all of them:
 ```
 -S    --stable                Use stable libraries
 -L    --latest                Use latest development libraries
