@@ -52,6 +52,8 @@ Options:
 -q    --quiet                 Turn off verbose build messages (progress and errors are still shown)
 -l    --libre                 Use LibreSSL instead of OpenSSL
 -f    --force                 Force overwrite if /xmrig/ folder already exists
+
+-h    --help                  Print this help message
 ```
 
 ![b](https://i.ibb.co/nzbpDY5/b.gif)

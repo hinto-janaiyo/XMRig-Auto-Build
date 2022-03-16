@@ -16,4 +16,6 @@ Options:
 -l    --libre                 Use LibreSSL instead of OpenSSL
 -f    --force                 Force overwrite if /xmrig/ folder already exists
 
+-h    --help                  Print this help message
+
 XMRig-Auto-Build, made by: hinto.janaiyo

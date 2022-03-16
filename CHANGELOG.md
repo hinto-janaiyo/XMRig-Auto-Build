@@ -22,6 +22,7 @@
 * hwloc v2.7.0
 * XMRig v6.16.4
 
+
 # v1.3
 ## Updates
 * New option flags added for skipping interactive prompts and building quickly
