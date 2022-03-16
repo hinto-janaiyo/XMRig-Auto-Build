@@ -20,7 +20,7 @@
 * **Arch** (pacman based: Manjaro)
 * **Fedora** (DNF based)
 
-*note: any machine that has bash can run this script*
+*note: any machine that has bash+build packages can use this script*
 
 ## Getting Started
 [Download the latest release](https://github.com/hinto-janaiyo/XMRig-Auto-Build/releases/latest)
