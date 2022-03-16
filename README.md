@@ -48,7 +48,7 @@ Options:
 
 -S    --stable                Use stable libraries
 -L    --latest                Use latest development libraries
--C    --config                Allow basic configuration of the config.json
+-C    --config                Allow configuration of the config.json
 -P    --path                  Set install path:  --path=YOUR_PATH_HERE  or  -P=YOUR_PATH_HERE
 -D    --dev                   Use the active development branch of XMRig
 
