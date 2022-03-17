@@ -53,6 +53,9 @@ colorAll_2="$depsColor $quietColor $libreColor $forceColor"
 Apt_Build_Dependencies(){ sudo apt install git wget build-essential cmake automake libtool autoconf ;}
 Pacman_Build_Dependencies(){ sudo pacman -S git wget base-devel cmake ;}
 DNF_Build_Dependencies(){ sudo dnf install -y git wget make cmake gcc gcc-c++ libstdc++-static automake libtool autoconf ;}
+Pkg_Build_Dependencies(){ pkg install git wget cmake automake libtool autoconf ;}
+Brew_Build_Dependencies(){ brew install cmake wget automake libtool autoconf ;}
+Apk_Build_Dependencies(){ apk add git wget make cmake libstdc++ gcc g++ automake libtool autoconf linux-headers ;}
 
 #
 #						Prompt/Message Functions
@@ -145,6 +148,16 @@ Build_Dependencies()
 			;;
 		dnf)
 			DNF_Build_Dependencies
+			;;
+		pkg)
+			Pkg_Build_Dependencies
+			;;
+		brew)
+			Brew_Build_Dependencies
+			;;
+		apk)
+			Apk_Build_Dependencies
+			;;
 	esac
 	if [[ $? != 0 ]]; then
 	$bred; echo "Installing build dependencies failed, exiting..."
@@ -261,8 +274,20 @@ Build_XMRig()
 {
 	Build_Message "$build6"
 	cd "$AutoBuild"
-	cmake .. -DXMRIG_DEPS=$deps
-	make -j$(nproc)
+	if [[ $foundPackageManager = "pkg" || $foundPackageManager = "apk" ]]; then
+		cmake .. -DXMRIG_DEPS=$deps -DBUILD_STATIC=ON
+	elif [[ $foundPackageManager = "brew" ]]; then
+		cmake .. -DOPENSSL_ROOT_DIR="$deps/openssl" -DHWLOC_INCLUDE_DIR="$deps/include" -DHWLOC_LIBRARY="$deps/lib/libhwloc.a"
+	else
+		cmake .. -DXMRIG_DEPS=$deps
+	fi
+	if [[ $foundPackageManager = "brew" ]]; then
+		make -j$(sysctl -n hw.logicalcpu)
+	elif [[ $foundPackageManager = "pkg" ]]; then
+		make -j$(sysctl -n hw.ncpu)
+	else
+		make -j$(nproc)
+	fi
 	cp "$installDirectory/src/config.json" $AutoBuild
 }
 Build_Fail()
@@ -335,7 +360,13 @@ Search_For_PackageManager()
 {
 	local packageManager="$1"
 	if [[ -f $packageManager ]]; then
-		$bgreen; echo -n "$distroPrettyName"
+		if [[ $packageManager = "brew" ]]; then
+			$bgreen; echo -n "MacOS"
+		elif [[ $packageManager = "pkg" ]]; then
+			$bgreen; echo -n "FreeBSD"
+		else
+			$bgreen; echo -n "$distroPrettyName"
+		fi
 		$iwhite; echo -n " detected: using "
 		$bgreen; echo "$2"
 		found="yes"
@@ -348,6 +379,9 @@ Which_PackageManager()
 	Search_For_PackageManager "/usr/bin/apt" "apt" || exit
 	Search_For_PackageManager "/usr/bin/pacman" "pacman" || exit
 	Search_For_PackageManager "/usr/bin/dnf" "dnf" || exit
+	Search_For_PackageManager "/usr/bin/pkg" "pkg" || exit
+	Search_For_PackageManager "/usr/bin/brew" "brew" || exit
+	Search_For_PackageManager "/usr/bin/apk" "apk" || exit
 	if [[ $found != "yes" ]]; then
 		$bred; echo "Package Manager not found/supported!"
 		$ired; echo "Exiting..."

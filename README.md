@@ -6,8 +6,8 @@
 ## About 
 [XMRig](https://github.com/xmrig/xmrig)-Auto-Build:
 * installs build dependencies
-* builds the required libraries
-* uses those libraries to build a portable XMRig binary
+* builds libraries
+* uses those libraries to build a XMRig binary
 * (optionally) cleans up all the source code
 * (optionally) configures config.json
 
@@ -15,10 +15,14 @@
 
 *note: build dependencies are NOT uninstalled afterwards*
 
-## Supported Linux Distributions 🐧
+## Supported OS 🐧/😡/🍎
 * **Debian** (apt based: Ubuntu, Linux Mint, Pop!_OS)
 * **Arch** (pacman based: Manjaro)
 * **Fedora** (DNF based)
+* **Alpine** (apk based)
+* **FreeBSD** (pkg based)
+* **MacOS** ([brew](https://brew.sh) based)
+* **Windows** ([sorry, guys...](https://xmrig.com/docs/miner/build/windows)
 
 *note: any machine that has bash+build packages can use this script*
 
@@ -63,7 +67,7 @@ Options:
 ![b](https://i.ibb.co/nzbpDY5/b.gif)
 
 ## Libraries
-The libraries required by XMRig are:
+The libraries used by XMRig are:
 * [Libuv](https://github.com/libuv/libuv)
 * [Hwloc](https://github.com/open-mpi/hwloc)
 * [OpenSSL](https://github.com/openssl/openssl) (or [LibreSSL](https://github.com/libressl-portable/portable))

@@ -1,3 +1,14 @@
+# v1.4.1
+## Updates
+* Added support for MacOS, Alpine and FreeBSD
+
+## Versions Used for [Stable] Install
+* libuv v1.44.1
+* OpenSSL v1.1.1n (or LibreSSL v3.4.2)
+* hwloc v2.7.0
+* XMRig v6.16.4
+
+
 # v1.4
 ## Updates
 * 6 more option flags, here are all of them:
