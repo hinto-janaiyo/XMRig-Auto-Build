@@ -16,12 +16,12 @@
 *note: build dependencies are NOT uninstalled afterwards*
 
 ## Supported OS 🐧 😡 🍎
-* ✅ **Debian** (apt based: Ubuntu, Linux Mint, Pop!_OS)
-* ✅ **Arch** (pacman based: Manjaro)
-* ✅ **Fedora** (DNF based)
-* ✅ **Alpine** (apk based)
-* ✅ **FreeBSD** (pkg based)
-* ✅ **MacOS** ([brew](https://brew.sh) based)
+* **Debian** (apt based: Ubuntu, Linux Mint, Pop!_OS)
+* **Arch** (pacman based: Manjaro)
+* **Fedora** (DNF based)
+* **Alpine** (apk based)
+* **FreeBSD** (pkg based)
+* **MacOS** ([brew](https://brew.sh) based)
 * ❌ **Windows** ([sorry, guys...](https://xmrig.com/docs/miner/build/windows))
 
 *note: any machine that has bash+build packages can use this script*
