@@ -22,7 +22,7 @@
 * **Alpine** (apk based)
 * **FreeBSD** (pkg based)
 * **MacOS** ([brew](https://brew.sh) based)
-* **Windows** ([sorry, guys...](https://xmrig.com/docs/miner/build/windows))
+❌ **Windows** ([sorry, guys...](https://xmrig.com/docs/miner/build/windows))
 
 *note: any machine that has bash+build packages can use this script*
 
