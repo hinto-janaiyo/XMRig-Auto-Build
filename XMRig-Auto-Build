@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-
-########################################################        HEADER CODE        ########################################################
+#########################################################################        HEADER CODE        #########################################################################
 #
 #						Colors
 #
@@ -43,9 +42,6 @@ build3="[3/6] Building Libuv"
 build4="[4/6] Building Hwloc"
 build5="[5/6] Building OpenSSL"
 build6="[6/6] Building XMRig"
-
-colorAll_1="$stableColor $latestColor $configColor $pathColor $cleanColor"
-colorAll_2="$depsColor $quietColor $libreColor $forceColor"
 
 #
 #						Build Dependency Install Functions
@@ -390,7 +386,7 @@ Which_PackageManager()
 }
 
 #
-#						Option Function
+#						Option Functions
 #
 Clean()
 {
@@ -448,7 +444,7 @@ Config_Prompt()
 	fi
 }
 
-########################################################        START OF QUICK BUILD        ########################################################
+####################################################################        START OF QUICK BUILD        #####################################################################
 # stupid way of skipping
 if [[ $1 = "" ]]; then
 	interactive="yes"
@@ -520,6 +516,7 @@ for optionChoices in $@ ;do
 			exit
 	esac
 done
+
 # help option
 if [[ $optionHelp = "yes" ]]; then
 	Print_Help
@@ -531,11 +528,13 @@ if [[ $optionStable != "yes" && $optionLatest != "yes" ]]; then
 	$ired; echo "XMRig-Auto-Build: pick a library version!"
 	exit
 fi
+
 # multiple library error
 if [[ $optionStable = "yes" && $optionLatest = "yes" ]]; then
     $ired; echo "XMRig-Auto-Build: pick only 1 library version!"
 	exit
 fi
+
 # really really really stupid way to filter input for path
 if [[ $optionPath = "yes" ]]; then
 	for i in $@ ;do
@@ -560,12 +559,11 @@ if [[ $optionPath = "yes" ]]; then
 		exit
 	fi
 fi
-
 colorAll_1="$stableColor $latestColor $configColor $pathColor $devColor"
 colorAll_2="$cleanColor $depsColor $quietColor $libreColor $forceColor"
 
 #
-#						Quick Build Functions
+#						Quick Build Function
 #
 Quick_Build_Prompt()
 {
@@ -619,8 +617,8 @@ YES_no
 # stupid way of skipping
 fi
 
-########################################################                END OF QUICK BUILD        ########################################################
-########################################################        START OF INTERACTIVE BUILD        ########################################################
+##################################################################               END OF QUICK               #################################################################
+##################################################################        START OF INTERACTIVE BUILD        #################################################################
 
 #
 #						Initial Prompt
@@ -736,10 +734,6 @@ done
 $iwhite; echo "[$xmrigVersion] selected..."
 
 #
-#						Pick XMRig Version
-#
-
-#
 #						Configure config.json
 #
 while true; do
@@ -793,7 +787,6 @@ Yes(){ $iwhite; echo "Starting..." ;$off; }
 No(){ $ired; echo "Exiting..." ;$off;exit; }
 echo -n "                  "
 YES_no
-
 Build_All
 
-########################################################        END OF INTERACTIVE BUILD        ########################################################
+####################################################################        END OF INTERACTIVE BUILD        ##################################################################
