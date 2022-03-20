@@ -2,6 +2,12 @@
 ## Updates
 * As ```sed -i``` is not POSIX-compliant, the ```config``` option is disabled on non-GNU/Linux machines (for now)
 
+## Versions Used for [Stable] Install
+* libuv v1.44.1
+* OpenSSL v1.1.1n (or LibreSSL v3.4.2)
+* hwloc v2.7.0
+* XMRig v6.16.4
+
 
 # v1.4.1
 ## Updates
