@@ -114,7 +114,7 @@ Print_Help()
 cat <<EOM
 -S    --stable                Use stable libraries
 -L    --latest                Use latest development libraries
--C    --config                Allow configuration of the config.json
+-C    --config                Allow configuration of the config.json (GNU/Linux only)
 -P    --path                  Set install path:  --path=YOUR_PATH_HERE  or  -P=YOUR_PATH_HERE
 -D    --dev                   Use the active development branch of XMRig
 
@@ -411,7 +411,7 @@ Config()
 	else
 		configJson="$AutoBuild/config.json"
 	fi
-	if [[ $foundPackageManager = "apk" || $foundPackageManager = "pacman" ]]; then
+	if [[ $foundPackageManager = "apk" || $foundPackageManager = "brew" ]]; then
 		configBasic="no"
 		configAdvanced="no"
 	fi
@@ -433,7 +433,7 @@ Config_Prompt()
 {
 	Search_For_PackageManager >/dev/null
 	Which_PackageManager >/dev/null
-	if [[ $foundPackageManager = "apk" || $foundPackageManager = "pacman" ]]; then
+	if [[ $foundPackageManager = "apk" || $foundPackageManager = "brew" ]]; then
 		$ired; echo "Config is only available on GNU/Linux"
 	else
 		[[ $interactive = "yes" ]]&& local bred="$iblue"

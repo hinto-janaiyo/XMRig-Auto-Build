@@ -1,3 +1,8 @@
+# v1.4.2
+## Updates
+* As ```sed -i``` is not POSIX-compliant, the ```config``` option is disabled on non-GNU/Linux machines (for now)
+
+
 # v1.4.1
 ## Updates
 * Added support for MacOS, Alpine and FreeBSD

@@ -9,7 +9,7 @@
 * builds libraries
 * uses those libraries to build a XMRig binary
 * (optionally) cleans up all the source code
-* (optionally) configures config.json
+* (optionally) configures config.json (GNU/Linux only)
 
 ![a](https://i.ibb.co/Qv23rsy/a.gif)
 
@@ -51,7 +51,7 @@ Options:
 
 -S    --stable                Use stable libraries
 -L    --latest                Use latest development libraries
--C    --config                Allow configuration of the config.json
+-C    --config                Allow configuration of the config.json (GNU/Linux only)
 -P    --path                  Set install path:  --path=YOUR_PATH_HERE  or  -P=YOUR_PATH_HERE
 -D    --dev                   Use the active development branch of XMRig
 
